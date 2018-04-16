@@ -26,29 +26,44 @@ namespace iTunesListener
                 return "<a.+?href=[\"'](.+?)[\"'].+?>";
             }
         }
-        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword,string XPath,string selectedAttribute)
+        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword,string XPath,params string[] searchingContent)
         {
-            var url = $@"https://www.youtube.com/results?search_query={searchingKeyword.Replace(' ', '+')}";
-            var baseToken = "https://www.youtube.com/watch?v=";
+            var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+')}";
             try
             {
                 HttpClient http = new HttpClient();
-                var response = await http.GetByteArrayAsync("https://www.youtube.com/results?search_query=adam+levine");
+                var response = await http.GetByteArrayAsync($"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+')}");
                 var input = System.Text.Encoding.UTF8.GetString(response);
                 var doc = new HtmlDocument();
                 byte[] byteArray = Encoding.ASCII.GetBytes(input);
                 var ts = new MemoryStream(byteArray);
                 doc.Load(ts);
                 var root = doc.DocumentNode;
-                var tag = root.SelectNodes(XPath);
-                var vidUrl = tag[0].Attributes[selectedAttribute];
-                baseToken += vidUrl;
+                var hrefs = root.SelectNodes(XPath).Select(p => p.GetAttributeValue("href", "not found"));
+                foreach(var href in hrefs)
+                {
+                    var valid = true;
+                    for (var i = 0; i < searchingContent.Length; i++)
+                    {
+                        if (!href.Contains(searchingContent[i]))
+                        {
+                            valid = false;
+                            break;
+                        }
+                        //return href;
+                    }
+                    if (valid)
+                    {
+                        return href;
+                    }
+                        
+                }
+                return string.Empty;
             }
             catch
             {
                 return string.Empty;
             }
-            return baseToken;
         }
         public static async Task<string> HTMLParser(string searchingKeyword, string regexPattern = "<img.+?src=[\"'](.+?)[\"'].+?>")
         {
@@ -88,6 +103,22 @@ namespace iTunesListener
             }
             searchingKeyword = searchingKeyword.Replace(' ', '+');
             return $@"https://www.google.co.th/search?q={searchingKeyword}";
+        }
+        public static string GetMusicURL(string name,string album,string artist)
+        {
+            var url = HTMLHelper.HTMLAgilityPackParser($"{album} {artist} iTunes", "//a[contains(@href,'album')]", "itunes","album").Result;
+            if (url == string.Empty)
+                url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+            else
+            {
+                //dirty way, indeed.
+                var httpIndex = url.IndexOf("h");
+                var slashIndex = Extension.GetIndexOfAt(url, '/', 7);
+                var afterSlash = url.Substring(slashIndex + 1);
+                var songDigit = Extension.GetOnlyDigit(afterSlash);
+                url = url.Substring(httpIndex, slashIndex - url.Substring(0, httpIndex).Length + 1) + songDigit;
+            }
+            return url;
         }
     }
 }

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Facebook;
 using iTunesLib;
-using Facebook;
+using System;
 using System.Dynamic;
-using Newtonsoft.Json;
-using System.Diagnostics;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace iTunesListener
 {
@@ -23,12 +16,13 @@ namespace iTunesListener
         static Post previousPost = new Post();
         static DateTime startTime;
         static string previousTrackName = string.Empty;
-        const int scale = 30;
+        const int scale = 50;
         private static Thread mainThread;
         const string mainHeader = "  START    |                        MUSIC   NAME                        |      Artist(s)     |      Remaining Time\n----------------------------------------------------------------------------------------------------------------------";
         public static void Main(string[] args)
         {
-            Console.SetWindowSize(100+scale+10, 25);
+            var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
+            Console.SetWindowSize(width, 25);
             itunes = new iTunesApp();
             try
             { 
@@ -80,7 +74,7 @@ namespace iTunesListener
         private static void MainThread()
         {
             string postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
-            string appFormat = "\r[{0}] |{1,-60}|{2,-20}|{3}   ";
+            string appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
             Console.Clear();
             Console.WriteLine(mainHeader);
             while (ValidateiTunesInstanceState() == false)
@@ -102,16 +96,26 @@ namespace iTunesListener
                             FacebookHelper.DeletePreviousPost(ref fbClient,post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
                             var name = track.Name;
                             var artist = track.Artist;
-                            var url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>");//HTMLHelper.HTMLAgilityPackParser($"{name} {artist}", "//div[contains(@class,'yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix')]", "data-context-item-id");
+                            var album = track.Album;
+                            var url = HTMLHelper.GetMusicURL(name, album, artist);
+                            //HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>");//HTMLHelper.HTMLAgilityPackParser($"{name} {artist}", "//div[contains(@class,'yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix')]", "data-context-item-id");
                             dynamic param = new ExpandoObject();
                             param.message = String.Format(postFormat, track.Name, track.Album, track.Artist);
-                            param.link = url.Result;
-                            fbClient.Post("me/feed", param);
+                            param.link = url;
+                            try
+                            {
+                                fbClient.Post("me/feed", param);
+                            }
+                            catch (FacebookOAuthException)
+                            {
+
+                            }
+                            
                         })).Start();
                         //GenerateFacebookThread();
                     }
                     //Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), UnknownLength_Substring(track.Name + " - " + track.Album, 60), UnknownLength_Substring(track.Artist, 20), ToMinutes(track.Duration - itunes.PlayerPosition)));
-                    Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), (track.Name + " - " + track.Album).UnknownLength_Substring(60), track.Artist.UnknownLength_Substring(20), Extension.GetProgression(scale,itunes.PlayerPosition, track.Duration)));
+                    Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), (track.Name + " - " + track.Album).UnknownLength_Substring(60), track.Artist.UnknownLength_Substring(20), track.Time));
                 }
                 catch (Exception e)
                 {
@@ -128,7 +132,7 @@ namespace iTunesListener
                 try
                 {
                     var track = itunes.CurrentTrack;
-                    Console.Title = "[" + itunes.PlayerState + "]  " + string.Format("Listening to {0} by {1}", track.Name, track.Artist) + ", remaining  " + itunes.PlayerPosition.ToMinutes() + " / " + track.Time;
+                    Console.Title = "[" + itunes.PlayerState + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(20)) + ", " + itunes.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, itunes.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - itunes.PlayerPosition);
                 }
                 catch
                 {

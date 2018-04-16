@@ -30,5 +30,57 @@ namespace iTunesListener
                 return s;
             return s.Substring(0, length);
         }
+        public static object GetOnlyDigit(string afterSlash)
+        {
+            var digits = Enumerable.Range(0, 10).ToArray();
+            var exception = new[] { "id" };
+            var stringBuilder = new StringBuilder();
+            for (var i = 0; i < afterSlash.Length; i++)
+            {
+                var current = afterSlash[i].ToString();
+                var count = false;
+                for (var e = 0; e < exception.Length; e++)
+                {
+                    var exc = exception[e];
+                    if (exc.Contains(current))
+                    {
+                        stringBuilder.Append(current);
+                        count = true;
+                        break;
+                    }
+                }
+                for (var d = 0; d < digits.Length; d++)
+                {
+                    var digit = digits[d];
+                    if (current == digit.ToString())
+                    {
+                        stringBuilder.Append(current);
+                        count = true;
+                        break;
+                    }
+                }
+                if (!count)
+                    return stringBuilder;
+            }
+            return string.Empty;
+        }
+
+        public static int GetIndexOfAt(this string baseString, char c, int occurrent)
+        {
+            var index = 0;
+            var count = 0;
+            var stringArray = baseString.ToArray();
+            for (var i = 0; i < stringArray.Length; i++)
+            {
+                if (stringArray[i] == c)
+                {
+                    index = i;
+                    count++;
+                    if (count == occurrent)
+                        return i;
+                }
+            }
+            return -1;
+        }
     }
 }
