@@ -22,7 +22,7 @@ namespace iTunesListener
         {
             var percentage = (((double)position / duration) * (scale * 10)) / 10;
             var repeating = Math.Round(percentage, 0);
-            return $"[{new string('_', (int)repeating > 0 ? (int)repeating - 1 : 0)}|{new string('_', scale - (int)repeating)}]";
+            return $"[{new string('-', (int)repeating > 0 ? (int)repeating - 1 : 0)}▓{new string('-', scale - (int)repeating)}]";
         }
         public static string UnknownLength_Substring(this string s, int length)
         {

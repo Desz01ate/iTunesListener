@@ -92,21 +92,21 @@ namespace iTunesListener
                         Console.WriteLine();
                         previousTrackName = track.Name;
                         new Thread(new ThreadStart(delegate {
-                            fbClient = new FacebookClient(Properties.Settings.Default.AccessToken);
-                            FacebookHelper.DeletePreviousPost(ref fbClient,post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
-                            var name = track.Name;
-                            var artist = track.Artist;
-                            var album = track.Album;
-                            var url = HTMLHelper.GetMusicURL(name, album, artist);
-                            //HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>");//HTMLHelper.HTMLAgilityPackParser($"{name} {artist}", "//div[contains(@class,'yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix')]", "data-context-item-id");
-                            dynamic param = new ExpandoObject();
-                            param.message = String.Format(postFormat, track.Name, track.Album, track.Artist);
-                            param.link = url;
                             try
-                            {
+                            {      
+                                fbClient = new FacebookClient(Properties.Settings.Default.AccessToken);
+                                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
+                                var name = track.Name;
+                                var artist = track.Artist;
+                                var album = track.Album;
+                                var url = HTMLHelper.GetMusicURL(name, album, artist);
+                                //HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>");//HTMLHelper.HTMLAgilityPackParser($"{name} {artist}", "//div[contains(@class,'yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix')]", "data-context-item-id");
+                                dynamic param = new ExpandoObject();
+                                param.message = String.Format(postFormat, track.Name, track.Album, track.Artist);
+                                param.link = url;
                                 fbClient.Post("me/feed", param);
                             }
-                            catch (FacebookOAuthException)
+                            catch (Exception)
                             {
 
                             }
