@@ -1,6 +1,7 @@
 ﻿using Facebook;
 using iTunesLib;
 using System;
+using System.Diagnostics;
 using System.Dynamic;
 using System.Threading;
 
@@ -18,7 +19,7 @@ namespace iTunesListener
         static string previousTrackName = string.Empty;
         const int scale = 50;
         private static Thread mainThread;
-        const string mainHeader = "  START    |                        MUSIC   NAME                        |      Artist(s)     |      Remaining Time\n----------------------------------------------------------------------------------------------------------------------";
+        const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
@@ -81,6 +82,7 @@ namespace iTunesListener
             {
                 Thread.Sleep(1000);
             }
+            fbClient = new FacebookClient(Properties.Settings.Default.AccessToken);
             while (true)
             {
                 try
@@ -94,7 +96,6 @@ namespace iTunesListener
                         new Thread(new ThreadStart(delegate {
                             try
                             {      
-                                fbClient = new FacebookClient(Properties.Settings.Default.AccessToken);
                                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
                                 var name = track.Name;
                                 var artist = track.Artist;
@@ -106,9 +107,9 @@ namespace iTunesListener
                                 param.link = url;
                                 fbClient.Post("me/feed", param);
                             }
-                            catch (Exception)
+                            catch (Exception e)
                             {
-
+                                Debug.WriteLine(e.ToString());
                             }
                             
                         })).Start();
@@ -131,8 +132,9 @@ namespace iTunesListener
             {
                 try
                 {
+                    var state = itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying ? "▶️ Playing" : "⏸ Pause";
                     var track = itunes.CurrentTrack;
-                    Console.Title = "[" + itunes.PlayerState + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(20)) + ", " + itunes.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, itunes.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - itunes.PlayerPosition);
+                    Console.Title = itunes.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, itunes.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - itunes.PlayerPosition) + " [" + state + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(30));
                 }
                 catch
                 {
@@ -160,6 +162,9 @@ namespace iTunesListener
                     case ConsoleKey.Enter:
                     case ConsoleKey.Spacebar:
                         itunes.PlayPause();
+                        break;
+                    case ConsoleKey.Escape:
+                        itunes.Stop();
                         break;
                     case ConsoleKey.UpArrow:
                         mainThread.Suspend();

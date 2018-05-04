@@ -26,7 +26,7 @@ namespace iTunesListener
                 return "<a.+?href=[\"'](.+?)[\"'].+?>";
             }
         }
-        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword,string XPath,params string[] searchingContent)
+        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword, string XPath, string musicName, params string[] searchingContent)
         {
             var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+')}";
             try
@@ -40,7 +40,7 @@ namespace iTunesListener
                 doc.Load(ts);
                 var root = doc.DocumentNode;
                 var hrefs = root.SelectNodes(XPath).Select(p => p.GetAttributeValue("href", "not found"));
-                foreach(var href in hrefs)
+                foreach (var href in hrefs)
                 {
                     var valid = true;
                     for (var i = 0; i < searchingContent.Length; i++)
@@ -55,8 +55,9 @@ namespace iTunesListener
                     if (valid)
                     {
                         return href;
+                        //return href;
                     }
-                        
+
                 }
                 return string.Empty;
             }
@@ -65,6 +66,19 @@ namespace iTunesListener
                 return string.Empty;
             }
         }
+
+        private static string ReFormat(string musicName, string href)
+        {
+            var baseString = @"https://itunes.apple.com/th";
+            //var slash = baseString.Length; //anything behind the /album/
+            //var lastSlash = href.LastIndexOf('/');
+            //var albumName = href.Substring(slash, lastSlash - slash);
+            //baseString += musicName.ToLower().Replace(' ', '-');//href.Replace(albumName, musicName.ToLower().Replace(' ', '-'));
+            //baseString += "/" + Extension.GetOnlyDigit(href.Substring(lastSlash + 1));
+            baseString += href.Substring(href.IndexOf(@"/album/"));
+            return baseString;
+        }
+
         public static async Task<string> HTMLParser(string searchingKeyword, string regexPattern = "<img.+?src=[\"'](.+?)[\"'].+?>")
         {
             var url = $@"https://www.youtube.com/results?search_query={searchingKeyword.Replace(' ', '+')}";
@@ -88,7 +102,7 @@ namespace iTunesListener
         }
         public static async Task<string> GetYoutubeVideo(string searchingKeyword)
         {
-            var url = $@"https://www.youtube.com/results?search_query={searchingKeyword.Replace(' ','+')}";
+            var url = $@"https://www.youtube.com/results?search_query={searchingKeyword.Replace(' ', '+')}";
             try
             {
                 HttpClient http = new HttpClient();
@@ -104,20 +118,62 @@ namespace iTunesListener
             searchingKeyword = searchingKeyword.Replace(' ', '+');
             return $@"https://www.google.co.th/search?q={searchingKeyword}";
         }
-        public static string GetMusicURL(string name,string album,string artist)
+        public static string GetMusicURL(string name, string album, string artist)
         {
-            var url = HTMLHelper.HTMLAgilityPackParser($"{album} {artist} iTunes", "//a[contains(@href,'album')]", "itunes","album").Result;
+            var url = HTMLHelper.HTMLAgilityPackParser($"{album} {artist} iTunes", "//a[contains(@href,'album')]", name, "itunes", "album").Result;
+
             if (url == string.Empty)
-                url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+            {
+                return HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+            }
             else
             {
+                url = UrlCleaning(url);
+                if (url.Contains(@"/th/"))
+                {
+                    return url;
+                }
+                HttpClient http = new HttpClient();
+                var response = http.GetByteArrayAsync(url).Result;
+                var source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
+                if (source.Contains("We are unable to find iTunes on your computer"))
+                    url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+                else
+                {
+                    var oldUrl = url;
+                    try
+                    {
+                        url = ReFormat(name, url);
+                        response = http.GetByteArrayAsync(url).Result;
+                        source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
+                        if (source.Contains("We are unable to find iTunes on your computer"))
+                        {
+                            url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+                        }
+                    }
+                    catch
+                    {
+                        url = oldUrl;
+                    }
+                    
+                }
                 //dirty way, indeed.
-                var httpIndex = url.IndexOf("h");
-                var slashIndex = Extension.GetIndexOfAt(url, '/', 7);
-                var afterSlash = url.Substring(slashIndex + 1);
-                var songDigit = Extension.GetOnlyDigit(afterSlash);
-                url = url.Substring(httpIndex, slashIndex - url.Substring(0, httpIndex).Length + 1) + songDigit;
+                //var httpIndex = url.IndexOf("h");
+                //var slashIndex = Extension.GetIndexOfAt(url, '/', 7);
+                //var afterSlash = url.Substring(slashIndex + 1);
+                //var songDigit = Extension.GetOnlyDigit(afterSlash);
+                //url = url.Substring(httpIndex, slashIndex - url.Substring(0, httpIndex).Length + 1) + songDigit;
             }
+            return url;
+        }
+
+        private static string UrlCleaning(string url)
+        {
+            var httpIndex = url.IndexOf("h");
+            var slashIndex = Extension.GetIndexOfAt(url, '/', 7);
+            var afterSlash = url.Substring(slashIndex + 1);
+            var songDigit = Extension.GetOnlyDigit(afterSlash);
+            url = url.Substring(httpIndex, slashIndex - url.Substring(0, httpIndex).Length + 1) + songDigit;
             return url;
         }
     }

@@ -32,13 +32,20 @@ namespace iTunesListener
         }
         public static void DeletePreviousPost(ref FacebookClient fbClient,Action<Post> action)
         {
-            dynamic param = new ExpandoObject();
-            param.fields = "posts.since(" + DateTime.Now.ToString("ddMMMMyyyy") + "){id,message}";
-            var result = fbClient.Get("me", param);
-            var data = Convert.ToString(result.posts.data);
-            List<Post> jsonArray = JsonConvert.DeserializeObject<List<Post>>(data);
-            var previousPost = new Post();
-            jsonArray.ForEach(action);
+            try
+            {
+                dynamic param = new ExpandoObject();
+                param.fields = "posts.since(" + DateTime.Now.ToString("ddMMMMyyyy") + "){id,message}";
+                var result = fbClient.Get("me", param);
+                var data = Convert.ToString(result.posts.data);
+                List<Post> jsonArray = JsonConvert.DeserializeObject<List<Post>>(data);
+                var previousPost = new Post();
+                jsonArray.ForEach(action);
+            }
+            catch
+            {
+
+            }
         }
     }
 }
