@@ -17,7 +17,6 @@ namespace iTunesListener
         static Thread headerThread;
         static Post previousPost = new Post();
         static DateTime startTime;
-        static string previousTrackName = string.Empty;
         const int scale = 50;
         private static Thread mainThread;
         static ManualResetEvent _event = new ManualResetEvent(true);
@@ -51,7 +50,8 @@ namespace iTunesListener
                 actionThread.Start();
                 headerThread = new Thread(new ThreadStart(HeaderThread));
                 headerThread.Start();
-                GenerateFacebookThread();
+                mainThread = new Thread(new ThreadStart(MainThread));
+                mainThread.Start();
             }
         }
 
@@ -64,15 +64,6 @@ namespace iTunesListener
             return false;
 
         }
-
-        private static void GenerateFacebookThread()
-        {
-            if (mainThread != null)
-                if (mainThread.ThreadState == System.Threading.ThreadState.Running)
-                    mainThread.Abort();
-            mainThread = new Thread(new ThreadStart(MainThread));
-            mainThread.Start();
-        }
         private static bool ValidateiTunesInstanceState()
         {
             if (itunes == null)
@@ -81,18 +72,10 @@ namespace iTunesListener
                 return false;
             return true;
         }
-        private static bool TrackVerify(IITTrack previousTrack, IITTrack track)
-        {
-            if (previousTrack == null)
-                return true;
-            if (previousTrack.Name != track.Name)
-                return true;
-            return false;
-        }
         private static void MainThread()
         {
-            string postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
-            string appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
+            var previousTrack = new Music();
+
             Console.Clear();
             Console.WriteLine(mainHeader);
             while (ValidateiTunesInstanceState() == false)
@@ -106,21 +89,18 @@ namespace iTunesListener
                 try
                 {
                     track = itunes.CurrentTrack;
-                    if (track.Name != previousTrackName)
+                    if ((track.Name != previousTrack.Name) && (track.Album != previousTrack.Album)) //the IITrack object is not the same time every call
                     {
                         startTime = DateTime.Now;
                         Console.WriteLine();
-                        previousTrackName = track.Name;
+                        previousTrack.Set(track);
                         new Thread(new ThreadStart(delegate { //using Thread instead of Task because we don't need a callback, just let's this run in the background
                             try
                             {      
                                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
-                                var name = track.Name;
-                                var artist = track.Artist;
-                                var album = track.Album;
-                                var url = HTMLHelper.GetMusicURL(name, album, artist);
+                                var url = HTMLHelper.GetMusicURL(track.Name, track.Album, track.Artist);
                                 dynamic param = new ExpandoObject();
-                                param.message = String.Format(postFormat, track.Name, track.Album, track.Artist);
+                                param.message = previousTrack.GetPost();
                                 param.link = url;
                                 fbClient.Post("me/feed", param);
                             }
@@ -131,7 +111,7 @@ namespace iTunesListener
                             
                         })).Start();
                     }
-                    Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), (track.Name + " - " + track.Album).UnknownLength_Substring(60), track.Artist.UnknownLength_Substring(20), track.Time));
+                    Console.Write(previousTrack.GetConsole());
                 }
                 catch
                 {
