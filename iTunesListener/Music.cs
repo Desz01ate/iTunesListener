@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,10 +9,14 @@ namespace iTunesListener
 {
     class Music
     {
+        [JsonIgnore]
         private string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
+        [JsonIgnore]
         private string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
         public string Name { get; set; }
         public string Album { get; set; }
+        public string Artist { get; set; }
+        [JsonIgnore]
         private iTunesLib.IITTrack Track { get; set; }
         public string GetPost()
         {
@@ -29,6 +34,7 @@ namespace iTunesListener
         {
             Name = track.Name;
             Album = track.Album;
+            Artist = track.Artist;
             Track = track;
         }
     }

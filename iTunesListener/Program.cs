@@ -1,10 +1,15 @@
 ﻿using Facebook;
 using iTunesLib;
+using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Net;
+using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace iTunesListener
 {
@@ -13,8 +18,9 @@ namespace iTunesListener
         static FacebookClient fbClient;
         static iTunesApp itunes;
         static IITTrack track;
-        static Thread actionThread;
-        static Thread headerThread;
+        static Task actionThread;
+        static Task headerThread;
+        static Task webServiceListenerTask;
         static Post previousPost = new Post();
         static DateTime startTime;
         const int scale = 50;
@@ -22,7 +28,7 @@ namespace iTunesListener
         static ManualResetEvent _event = new ManualResetEvent(true);
         static EventHandler.ConsoleEventDelegate handler;
         const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
-        
+
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
@@ -31,7 +37,7 @@ namespace iTunesListener
             handler = new EventHandler.ConsoleEventDelegate(ConsoleEventCallback);
             EventHandler.SetConsoleCtrlHandler(handler, true);
             try
-            { 
+            {
                 FacebookHelper.RenewAccessToken();
             }
             catch
@@ -41,17 +47,70 @@ namespace iTunesListener
                 Properties.Settings.Default.Reset();
                 Properties.Settings.Default.AccessToken = input;
                 Properties.Settings.Default.Save();
-                //Console.Write(e.Message);
-                //Console.ReadLine();
             }
             finally
             {
-                actionThread = new Thread(new ThreadStart(ActionListenerThread));
+                actionThread = new Task((ActionListenerThread));
                 actionThread.Start();
-                headerThread = new Thread(new ThreadStart(HeaderThread));
+                headerThread = new Task((HeaderThread));
                 headerThread.Start();
                 mainThread = new Thread(new ThreadStart(MainThread));
                 mainThread.Start();
+                webServiceListenerTask = new Task(WebServiceListener);
+                webServiceListenerTask.Start();
+            }
+        }
+
+        private static async void WebServiceListener()
+        {
+            bool GetCommand = false;
+            HttpClient client = new HttpClient();
+            while (true)
+            {
+                try
+                {
+                    var wsCommand = await client.GetAsync("http://localhost/iTunesSyncer/api/Status?stat");
+                    var result = await wsCommand.Content.ReadAsStringAsync();
+                    if (result.Contains("Play"))
+                    {
+                        itunes.Play();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("Pause"))
+                    {
+                        itunes.Pause();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("Stop"))
+                    {
+                        itunes.Stop();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("Next"))
+                    {
+                        itunes.NextTrack();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("Previous"))
+                    {
+                        itunes.PreviousTrack();
+                        GetCommand = true;
+                    }
+                    if (GetCommand)
+                    {
+                        var dict = new Dictionary<string, string>();
+                        dict.Add("stat", "");
+                        var content = new FormUrlEncodedContent(dict);
+                        var r = await client.PostAsync("http://localhost/iTunesSyncer/StatUpdate", content);
+                        r.EnsureSuccessStatusCode();
+                        GetCommand = false;
+                    }
+                    await Task.Delay(1000);
+                }
+                catch
+                {
+
+                }
             }
         }
 
@@ -89,14 +148,25 @@ namespace iTunesListener
                 try
                 {
                     track = itunes.CurrentTrack;
-                    if ((track.Name != previousTrack.Name) && (track.Album != previousTrack.Album)) //the IITrack object is not the same time every call
+                    if ((track.Name != previousTrack.Name) || (track.Album != previousTrack.Album)) //the IITrack object is not the same time every call
                     {
                         startTime = DateTime.Now;
                         Console.WriteLine();
                         previousTrack.Set(track);
-                        new Thread(new ThreadStart(delegate { //using Thread instead of Task because we don't need a callback, just let's this run in the background
+                        new Thread(new ThreadStart(delegate
+                        { //using Thread instead of Task because we don't need a callback, just let's this run in the background
                             try
-                            {      
+                            {
+                                try //must try this because it would cause the entire application to crash if the web service is down or not reachable
+                                {
+                                    var jsonValue = Newtonsoft.Json.JsonConvert.SerializeObject((previousTrack), Newtonsoft.Json.Formatting.Indented);
+                                    using (var client = new WebClient())
+                                    {
+                                        client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
+                                        client.UploadString(new Uri("http://localhost/iTunesSyncer/api/Status"), jsonValue);
+                                    }
+                                }
+                                catch { }
                                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
                                 var url = HTMLHelper.GetMusicURL(track.Name, track.Album, track.Artist);
                                 dynamic param = new ExpandoObject();
@@ -108,7 +178,7 @@ namespace iTunesListener
                             {
                                 Debug.WriteLine(e.ToString());
                             }
-                            
+
                         })).Start();
                     }
                     Console.Write(previousTrack.GetConsole());
@@ -141,7 +211,7 @@ namespace iTunesListener
                 }
             }
         }
-        
+
         private static void ActionListenerThread()
         {
             while (true)
