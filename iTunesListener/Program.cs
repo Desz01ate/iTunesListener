@@ -20,8 +20,10 @@ namespace iTunesListener
         static string previousTrackName = string.Empty;
         const int scale = 50;
         private static Thread mainThread;
-        const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
+        static ManualResetEvent _event = new ManualResetEvent(true);
         static EventHandler.ConsoleEventDelegate handler;
+        const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
+        
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
@@ -100,6 +102,7 @@ namespace iTunesListener
             fbClient = new FacebookClient(Properties.Settings.Default.AccessToken);
             while (true)
             {
+                _event.WaitOne();
                 try
                 {
                     track = itunes.CurrentTrack;
@@ -108,7 +111,7 @@ namespace iTunesListener
                         startTime = DateTime.Now;
                         Console.WriteLine();
                         previousTrackName = track.Name;
-                        new Thread(new ThreadStart(delegate {
+                        new Thread(new ThreadStart(delegate { //using Thread instead of Task because we don't need a callback, just let's this run in the background
                             try
                             {      
                                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
@@ -116,7 +119,6 @@ namespace iTunesListener
                                 var artist = track.Artist;
                                 var album = track.Album;
                                 var url = HTMLHelper.GetMusicURL(name, album, artist);
-                                //HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>");//HTMLHelper.HTMLAgilityPackParser($"{name} {artist}", "//div[contains(@class,'yt-lockup yt-lockup-tile yt-lockup-video vve-check clearfix')]", "data-context-item-id");
                                 dynamic param = new ExpandoObject();
                                 param.message = String.Format(postFormat, track.Name, track.Album, track.Artist);
                                 param.link = url;
@@ -128,12 +130,10 @@ namespace iTunesListener
                             }
                             
                         })).Start();
-                        //GenerateFacebookThread();
                     }
-                    //Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), UnknownLength_Substring(track.Name + " - " + track.Album, 60), UnknownLength_Substring(track.Artist, 20), ToMinutes(track.Duration - itunes.PlayerPosition)));
                     Console.Write(string.Format(appFormat, startTime.ToString("HH:mm:ss"), (track.Name + " - " + track.Album).UnknownLength_Substring(60), track.Artist.UnknownLength_Substring(20), track.Time));
                 }
-                catch (Exception e)
+                catch
                 {
                     itunes = new iTunesApp();
                 }
@@ -183,18 +183,16 @@ namespace iTunesListener
                         itunes.Stop();
                         break;
                     case ConsoleKey.UpArrow:
-                        mainThread.Suspend();
+                        _event.Reset();
                         ShowPlaylist();
                         break;
                     case ConsoleKey.DownArrow:
-                        if (mainThread.ThreadState == System.Threading.ThreadState.Suspended)
+                        if (!_event.WaitOne(0))
                         {
                             Console.Clear();
                             Console.WriteLine(mainHeader);
-                            mainThread.Resume();
+                            _event.Set();
                         }
-                        else if (mainThread.ThreadState == System.Threading.ThreadState.Aborted)
-                            mainThread.Start();
                         break;
 
                 }
