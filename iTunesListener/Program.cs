@@ -3,6 +3,7 @@ using iTunesLib;
 using System;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace iTunesListener
@@ -20,16 +21,19 @@ namespace iTunesListener
         const int scale = 50;
         private static Thread mainThread;
         const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
+        static EventHandler.ConsoleEventDelegate handler;
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
             Console.SetWindowSize(width, 25);
             itunes = new iTunesApp();
+            handler = new EventHandler.ConsoleEventDelegate(ConsoleEventCallback);
+            EventHandler.SetConsoleCtrlHandler(handler, true);
             try
             { 
                 FacebookHelper.RenewAccessToken();
             }
-            catch (Exception e)
+            catch
             {
                 //MessageBox.Show("OAuth Access Token has been expired.");
                 string input = Microsoft.VisualBasic.Interaction.InputBox("OAuth access token has been expired", "Please enter your renew access token here", "Access Token", -1, -1);
@@ -48,6 +52,17 @@ namespace iTunesListener
                 GenerateFacebookThread();
             }
         }
+
+        private static bool ConsoleEventCallback(int eventType)
+        {
+            if (eventType == 2)
+            {
+                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
+            }
+            return false;
+
+        }
+
         private static void GenerateFacebookThread()
         {
             if (mainThread != null)
@@ -146,6 +161,7 @@ namespace iTunesListener
                 }
             }
         }
+        
         private static void ActionListenerThread()
         {
             while (true)
@@ -196,5 +212,13 @@ namespace iTunesListener
                 Console.WriteLine(string.Format(appFormat, playList[i].PlayedCount, playList[i].Name.UnknownLength_Substring(60), playList[i].Artist.UnknownLength_Substring(20), playList[i].Album.UnknownLength_Substring(40)));
             }
         }
+    }
+    class EventHandler
+    {
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern bool SetConsoleCtrlHandler(ConsoleEventDelegate callback, bool add);
+        public delegate bool ConsoleEventDelegate(int eventType);
+
     }
 }

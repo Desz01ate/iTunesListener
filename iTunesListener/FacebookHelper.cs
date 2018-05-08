@@ -35,7 +35,7 @@ namespace iTunesListener
             try
             {
                 dynamic param = new ExpandoObject();
-                param.fields = "posts.since(" + DateTime.Now.ToString("ddMMMMyyyy") + "){id,message}";
+                param.fields = "posts.since(1" + DateTime.Now.ToString("MMMMyyyy") + "){id,message}"; //posts.since(1monthyear){id,message}
                 var result = fbClient.Get("me", param);
                 var data = Convert.ToString(result.posts.data);
                 List<Post> jsonArray = JsonConvert.DeserializeObject<List<Post>>(data);
