@@ -17,6 +17,8 @@ namespace iTunesListener
         public string Album { get; set; }
         public string Artist { get; set; }
         [JsonIgnore]
+        private DateTime started { get; set; }
+        [JsonIgnore]
         private iTunesLib.IITTrack Track { get; set; }
         public string GetPost()
         {
@@ -28,10 +30,11 @@ namespace iTunesListener
         {
             //return string.Format(appFormat, DateTime.Now.ToString("HH:mm:ss"), (Name + " - " + Album).UnknownLength_Substring(60), Artist.UnknownLength_Substring(20), Time);
 
-            return string.Format(_appFormat, DateTime.Now.ToString("HH:mm:ss"), (Track.Name + " - " + Track.Album).UnknownLength_Substring(60), Track.Artist.UnknownLength_Substring(20), Track.Time);
+            return string.Format(_appFormat, started.ToString("HH:mm:ss"), (Track.Name + " - " + Track.Album).UnknownLength_Substring(60), Track.Artist.UnknownLength_Substring(20), Track.Time);
         }
         public void Set(iTunesLib.IITTrack track)
         {
+            started = DateTime.Now;
             Name = track.Name;
             Album = track.Album;
             Artist = track.Artist;

@@ -24,6 +24,7 @@ namespace iTunesListener
         static Post previousPost = new Post();
         static DateTime startTime;
         const int scale = 50;
+        const string endpoint = "http://hhcssdm.somee.com/iTunesSyncer";
         private static Thread mainThread;
         static ManualResetEvent _event = new ManualResetEvent(true);
         static EventHandler.ConsoleEventDelegate handler;
@@ -33,6 +34,8 @@ namespace iTunesListener
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
             Console.SetWindowSize(width, 25);
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.White;
             itunes = new iTunesApp();
             handler = new EventHandler.ConsoleEventDelegate(ConsoleEventCallback);
             EventHandler.SetConsoleCtrlHandler(handler, true);
@@ -69,31 +72,40 @@ namespace iTunesListener
             {
                 try
                 {
-                    var wsCommand = await client.GetAsync("http://localhost/iTunesSyncer/api/Status?stat");
-                    var result = await wsCommand.Content.ReadAsStringAsync();
-                    if (result.Contains("Play"))
+                    var wsCommand = await client.GetAsync($"{endpoint}/api/Status?stat");
+                    //var wsCommand = await client.GetAsync("http://localhost:54267/api/Status?stat");
+                    var result = (await wsCommand.Content.ReadAsStringAsync()).ToLower();
+                    if (result.Contains("play"))
                     {
                         itunes.Play();
                         GetCommand = true;
                     }
-                    else if (result.Contains("Pause"))
+                    else if (result.Contains("pause"))
                     {
                         itunes.Pause();
                         GetCommand = true;
                     }
-                    else if (result.Contains("Stop"))
+                    else if (result.Contains("stop"))
                     {
                         itunes.Stop();
                         GetCommand = true;
                     }
-                    else if (result.Contains("Next"))
+                    else if (result.Contains("next"))
                     {
                         itunes.NextTrack();
                         GetCommand = true;
                     }
-                    else if (result.Contains("Previous"))
+                    else if (result.Contains("previous"))
                     {
                         itunes.PreviousTrack();
+                        GetCommand = true;
+                    }else if (result.Contains("up"))
+                    {
+                        itunes.SoundVolume += 10;
+                        GetCommand = true;
+                    }else if (result.Contains("down"))
+                    {
+                        itunes.SoundVolume -= 10;
                         GetCommand = true;
                     }
                     if (GetCommand)
@@ -101,11 +113,12 @@ namespace iTunesListener
                         var dict = new Dictionary<string, string>();
                         dict.Add("stat", "");
                         var content = new FormUrlEncodedContent(dict);
-                        var r = await client.PostAsync("http://localhost/iTunesSyncer/StatUpdate", content);
+                        var r = await client.PostAsync($"{endpoint}/StatUpdate", content);
+                        //var r = await client.PostAsync("http://localhost:54267/StatUpdate", content);
                         r.EnsureSuccessStatusCode();
                         GetCommand = false;
                     }
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                 }
                 catch
                 {
@@ -145,6 +158,7 @@ namespace iTunesListener
             while (true)
             {
                 _event.WaitOne();
+                HttpClient client = new HttpClient();
                 try
                 {
                     track = itunes.CurrentTrack;
@@ -154,17 +168,17 @@ namespace iTunesListener
                         Console.WriteLine();
                         previousTrack.Set(track);
                         new Thread(new ThreadStart(delegate
-                        { //using Thread instead of Task because we don't need a callback, just let's this run in the background
+                        { //using Thread instead of Task because we don't care about a callback, just let's this run in the background and hope it successfully its work :v
                             try
                             {
                                 try //must try this because it would cause the entire application to crash if the web service is down or not reachable
                                 {
-                                    var jsonValue = Newtonsoft.Json.JsonConvert.SerializeObject((previousTrack), Newtonsoft.Json.Formatting.Indented);
-                                    using (var client = new WebClient())
-                                    {
-                                        client.Headers.Add(HttpRequestHeader.ContentType, "application/json");
-                                        client.UploadString(new Uri("http://localhost/iTunesSyncer/api/Status"), jsonValue);
-                                    }
+                                    
+                                    var dict = new Dictionary<string, string>();
+                                    dict.Add("Name", previousTrack.Name);
+                                    dict.Add("Album", previousTrack.Album);
+                                    dict.Add("Artist", previousTrack.Artist);
+                                    client.PostAsync($"{endpoint}/api/Status", new FormUrlEncodedContent(dict));
                                 }
                                 catch { }
                                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
