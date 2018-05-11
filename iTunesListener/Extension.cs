@@ -19,10 +19,10 @@ namespace iTunesListener
 
             return s + "...";
         }
-        public static string RenderString(string template, string _currentArtist, string _currentTitle, string _currentPlaylistType, string _currentPlaylist)
+        public static string RenderString(string template, Music track)
         {
-            return template.Replace("%artist", _currentArtist).Replace("%track", _currentTitle)
-                .Replace("%playlist_type", _currentPlaylistType).Replace("%playlist_name", _currentPlaylist);
+            return template.Replace("%artist", track.Artist).Replace("%track", track.Name)
+                .Replace("%playlist_type", track.PlaylistType).Replace("%playlist_name", track.Album);
         }
         public static string ToMinutes(this long elapsedMilliseconds)
         {

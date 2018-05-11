@@ -14,18 +14,17 @@ namespace iTunesListener
         private string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
         [JsonIgnore]
         private string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
-        public string Name { get; set; }
-        public string Album { get; set; }
-        public string Artist { get; set; }
         [JsonIgnore]
         private DateTime started { get; set; }
         [JsonIgnore]
-        private iTunesLib.IITTrack Track { get; set; }
+        private IITTrack Track { get; set; }
         [JsonIgnore]
-        public string CurrentPlaylistType { get; internal set; }
+        public ITPlayerState State { get; set; }
         [JsonIgnore]
-        public ITPlayerState State { get; internal set; }
-
+        public string PlaylistType { get; private set; }
+        public string Name { get; private set; }
+        public string Album { get; private set; }
+        public string Artist { get; private set; }
         public string GetPost()
         {
             //return String.Format(_postFormat, Name, Album, Artist);
@@ -38,9 +37,10 @@ namespace iTunesListener
 
             return string.Format(_appFormat, started.ToString("HH:mm:ss"), (Track.Name + " - " + Track.Album).UnknownLength_Substring(60), Track.Artist.UnknownLength_Substring(20), Track.Time);
         }
-        public void Set(iTunesLib.IITTrack track)
+        public void Set(IITTrack track)
         {
             started = DateTime.Now;
+            PlaylistType = "Album";
             Name = track.Name;
             Album = track.Album;
             Artist = track.Artist;

@@ -15,11 +15,10 @@ namespace iTunesListener
 {
     class Program
     {
-        static string DetailsFormat = "%artist - %track";
+        static string DetailsFormat = "%track - %artist";
         static string StateFormat = "%playlist_type: %playlist_name";
         static string PausedDetailsFormat = "%artist - %track";
         static string PausedStateFormat = "Paused";
-        static ITPlayerState _currentState;
         static FacebookClient fbClient;
         static iTunesApp itunes;
         static IITTrack track;
@@ -84,41 +83,19 @@ namespace iTunesListener
         }
         private static void UpdatePresence(Music currentPresenceTrack)
         {
-
-            if (itunes.CurrentPlaylist.Kind == ITPlaylistKind.ITPlaylistKindUser)
-            {
-                if (((IITUserPlaylist)itunes.CurrentPlaylist).SpecialKind == ITUserPlaylistSpecialKind.ITUserPlaylistSpecialKindMusic)
-                {
-                    currentPresenceTrack.CurrentPlaylistType = "Album";
-                    currentPresenceTrack.Album = itunes.CurrentTrack.Album;
-                }
-                else
-                {
-                    currentPresenceTrack.CurrentPlaylistType = "Playlist";
-                    currentPresenceTrack.Album = itunes.CurrentPlaylist.Name;
-                }
-            }
-            else
-            {
-                currentPresenceTrack.CurrentPlaylistType = "Album";
-                currentPresenceTrack.Album = itunes.CurrentTrack.Album;
-            }
-
             var presence = new DiscordRPC.RichPresence { largeImageKey = "itunes_logo_big" };
-
             if (currentPresenceTrack.State != ITPlayerState.ITPlayerStatePlaying)
             {
-                presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
-                presence.state = Extension.TruncateString(Extension.RenderString(PausedStateFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+                presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat,currentPresenceTrack));
+                presence.state = Extension.TruncateString(Extension.RenderString(PausedStateFormat, currentPresenceTrack));
             }
             else
             {
-                presence.details = Extension.TruncateString(Extension.RenderString(DetailsFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
-                presence.state = Extension.TruncateString(Extension.RenderString(StateFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+                presence.details = Extension.TruncateString(Extension.RenderString(DetailsFormat, currentPresenceTrack));
+                presence.state = Extension.TruncateString(Extension.RenderString(StateFormat, currentPresenceTrack));
                 presence.startTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() - itunes.PlayerPosition;
                 presence.endTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() + (itunes.CurrentTrack.Duration - itunes.PlayerPosition);
             }
-
             DiscordRPC.UpdatePresence(presence);
         }
         private static async void WebServiceListener()
@@ -183,11 +160,12 @@ namespace iTunesListener
                 }
             }
         }
-
         private static bool ConsoleEventCallback(int eventType)
         {
-            if (eventType == 2)
+            if (eventType == 2 || eventType == 0) //2 is user perform exit, 0 is application interupt (^C)
             {
+                _event.Reset();
+                Console.Write("\n\n\nResources cleaning...");
                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
             }
             return false;
