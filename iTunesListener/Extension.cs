@@ -8,6 +8,22 @@ namespace iTunesListener
 {
     static class Extension
     {
+        public static string TruncateString(string s)
+        {
+            var n = Encoding.Unicode.GetByteCount(s);
+            if (n <= 127) return s;
+            s = s.Substring(0, 64);
+
+            while (Encoding.Unicode.GetByteCount(s) > 123)
+                s = s.Substring(0, s.Length - 1);
+
+            return s + "...";
+        }
+        public static string RenderString(string template, string _currentArtist, string _currentTitle, string _currentPlaylistType, string _currentPlaylist)
+        {
+            return template.Replace("%artist", _currentArtist).Replace("%track", _currentTitle)
+                .Replace("%playlist_type", _currentPlaylistType).Replace("%playlist_name", _currentPlaylist);
+        }
         public static string ToMinutes(this long elapsedMilliseconds)
         {
             var ts = TimeSpan.FromSeconds(elapsedMilliseconds);

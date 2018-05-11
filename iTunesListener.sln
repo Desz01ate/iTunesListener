@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2036
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Re", "iTunesListener\Re.csproj", "{2808284D-B3CD-415B-A060-C82645DB63F6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTunesListener", "iTunesListener\iTunesListener.csproj", "{2808284D-B3CD-415B-A060-C82645DB63F6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

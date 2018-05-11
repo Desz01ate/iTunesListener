@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using iTunesLib;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,6 +21,11 @@ namespace iTunesListener
         private DateTime started { get; set; }
         [JsonIgnore]
         private iTunesLib.IITTrack Track { get; set; }
+        [JsonIgnore]
+        public string CurrentPlaylistType { get; internal set; }
+        [JsonIgnore]
+        public ITPlayerState State { get; internal set; }
+
         public string GetPost()
         {
             //return String.Format(_postFormat, Name, Album, Artist);

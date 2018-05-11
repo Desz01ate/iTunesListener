@@ -15,6 +15,11 @@ namespace iTunesListener
 {
     class Program
     {
+        static string DetailsFormat = "%artist - %track";
+        static string StateFormat = "%playlist_type: %playlist_name";
+        static string PausedDetailsFormat = "%artist - %track";
+        static string PausedStateFormat = "Paused";
+        static ITPlayerState _currentState;
         static FacebookClient fbClient;
         static iTunesApp itunes;
         static IITTrack track;
@@ -38,6 +43,7 @@ namespace iTunesListener
             Console.BackgroundColor = ConsoleColor.White;
             itunes = new iTunesApp();
             handler = new EventHandler.ConsoleEventDelegate(ConsoleEventCallback);
+            InitializeDiscod();
             EventHandler.SetConsoleCtrlHandler(handler, true);
             try
             {
@@ -63,7 +69,58 @@ namespace iTunesListener
                 webServiceListenerTask.Start();
             }
         }
+        private static void HandleReadyCallback() { }
+        private static void HandleErrorCallback(int errorCode, string message) { }
+        private static void HandleDisconnectedCallback(int errorCode, string message) { }
+        private static void InitializeDiscod()
+        {
+            DiscordRPC.EventHandlers handlers = new DiscordRPC.EventHandlers
+            {
+                readyCallback = HandleReadyCallback,
+                errorCallback = HandleErrorCallback,
+                disconnectedCallback = HandleDisconnectedCallback
+            };
+            DiscordRPC.Initialize("383816327850360843", ref handlers, true, null);
+        }
+        private static void UpdatePresence(Music currentPresenceTrack)
+        {
 
+            if (itunes.CurrentPlaylist.Kind == ITPlaylistKind.ITPlaylistKindUser)
+            {
+                if (((IITUserPlaylist)itunes.CurrentPlaylist).SpecialKind == ITUserPlaylistSpecialKind.ITUserPlaylistSpecialKindMusic)
+                {
+                    currentPresenceTrack.CurrentPlaylistType = "Album";
+                    currentPresenceTrack.Album = itunes.CurrentTrack.Album;
+                }
+                else
+                {
+                    currentPresenceTrack.CurrentPlaylistType = "Playlist";
+                    currentPresenceTrack.Album = itunes.CurrentPlaylist.Name;
+                }
+            }
+            else
+            {
+                currentPresenceTrack.CurrentPlaylistType = "Album";
+                currentPresenceTrack.Album = itunes.CurrentTrack.Album;
+            }
+
+            var presence = new DiscordRPC.RichPresence { largeImageKey = "itunes_logo_big" };
+
+            if (currentPresenceTrack.State != ITPlayerState.ITPlayerStatePlaying)
+            {
+                presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+                presence.state = Extension.TruncateString(Extension.RenderString(PausedStateFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+            }
+            else
+            {
+                presence.details = Extension.TruncateString(Extension.RenderString(DetailsFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+                presence.state = Extension.TruncateString(Extension.RenderString(StateFormat, currentPresenceTrack.Artist, currentPresenceTrack.Name, currentPresenceTrack.CurrentPlaylistType, currentPresenceTrack.Album));
+                presence.startTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() - itunes.PlayerPosition;
+                presence.endTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() + (itunes.CurrentTrack.Duration - itunes.PlayerPosition);
+            }
+
+            DiscordRPC.UpdatePresence(presence);
+        }
         private static async void WebServiceListener()
         {
             bool GetCommand = false;
@@ -147,7 +204,7 @@ namespace iTunesListener
         private static void MainThread()
         {
             var previousTrack = new Music();
-
+            HttpClient client = new HttpClient();
             Console.Clear();
             Console.WriteLine(mainHeader);
             while (ValidateiTunesInstanceState() == false)
@@ -158,11 +215,11 @@ namespace iTunesListener
             while (true)
             {
                 _event.WaitOne();
-                HttpClient client = new HttpClient();
                 try
                 {
                     track = itunes.CurrentTrack;
-                    if ((track.Name != previousTrack.Name) || (track.Album != previousTrack.Album)) //the IITrack object is not the same time every call
+                    previousTrack.State = itunes.PlayerState;
+                    if ((track.Name != previousTrack.Name) || (track.Album != previousTrack.Album)) //the IITrack object is not the same for every call
                     {
                         startTime = DateTime.Now;
                         Console.WriteLine();
@@ -195,6 +252,7 @@ namespace iTunesListener
 
                         })).Start();
                     }
+                    UpdatePresence(previousTrack);
                     Console.Write(previousTrack.GetConsole());
                 }
                 catch
@@ -225,7 +283,6 @@ namespace iTunesListener
                 }
             }
         }
-
         private static void ActionListenerThread()
         {
             while (true)
