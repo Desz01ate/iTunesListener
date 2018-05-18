@@ -17,7 +17,7 @@ namespace iTunesListener
     {
         static string DetailsFormat = "%track - %artist";
         static string StateFormat = "%playlist_type: %playlist_name";
-        static string PausedDetailsFormat = "%artist - %track";
+        static string PausedDetailsFormat = "%track - %artist";
         static string PausedStateFormat = "Paused";
         static FacebookClient fbClient;
         static iTunesApp itunes;
@@ -50,8 +50,7 @@ namespace iTunesListener
             }
             catch
             {
-                //MessageBox.Show("OAuth Access Token has been expired.");
-                string input = Microsoft.VisualBasic.Interaction.InputBox("OAuth access token has been expired", "Please enter your renew access token here", "Access Token", -1, -1);
+                string input = Microsoft.VisualBasic.Interaction.InputBox( "Please enter your renew access token here", "OAuth access token has been expired", "Access Token", -1, -1);
                 Properties.Settings.Default.Reset();
                 Properties.Settings.Default.AccessToken = input;
                 Properties.Settings.Default.Save();
@@ -62,10 +61,10 @@ namespace iTunesListener
                 actionThread.Start();
                 headerThread = new Task((HeaderThread));
                 headerThread.Start();
-                mainThread = new Thread(new ThreadStart(MainThread));
-                mainThread.Start();
                 webServiceListenerTask = new Task(WebServiceListener);
                 webServiceListenerTask.Start();
+                mainThread = new Thread(new ThreadStart(MainThread));
+                mainThread.Start();
             }
         }
         private static void HandleReadyCallback() { }
@@ -86,7 +85,7 @@ namespace iTunesListener
             var presence = new DiscordRPC.RichPresence { largeImageKey = "itunes_logo_big" };
             if (currentPresenceTrack.State != ITPlayerState.ITPlayerStatePlaying)
             {
-                presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat,currentPresenceTrack));
+                presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat, currentPresenceTrack));
                 presence.state = Extension.TruncateString(Extension.RenderString(PausedStateFormat, currentPresenceTrack));
             }
             else
@@ -133,11 +132,13 @@ namespace iTunesListener
                     {
                         itunes.PreviousTrack();
                         GetCommand = true;
-                    }else if (result.Contains("up"))
+                    }
+                    else if (result.Contains("up"))
                     {
                         itunes.SoundVolume += 10;
                         GetCommand = true;
-                    }else if (result.Contains("down"))
+                    }
+                    else if (result.Contains("down"))
                     {
                         itunes.SoundVolume -= 10;
                         GetCommand = true;
@@ -165,8 +166,11 @@ namespace iTunesListener
             if (eventType == 2 || eventType == 0) //2 is user perform exit, 0 is application interupt (^C)
             {
                 _event.Reset();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Black;
                 Console.Write("\n\n\nResources cleaning...");
                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
+                Console.Clear();
             }
             return false;
 
@@ -208,7 +212,7 @@ namespace iTunesListener
                             {
                                 try //must try this because it would cause the entire application to crash if the web service is down or not reachable
                                 {
-                                    
+
                                     var dict = new Dictionary<string, string>();
                                     dict.Add("Name", previousTrack.Name);
                                     dict.Add("Album", previousTrack.Album);
@@ -274,6 +278,12 @@ namespace iTunesListener
                     case ConsoleKey.RightArrow:
                         itunes.NextTrack();
                         break;
+                    case ConsoleKey.OemPlus:
+                        itunes.SoundVolume += 10;
+                        break;
+                    case ConsoleKey.OemMinus:
+                        itunes.SoundVolume -= 10;
+                        break;
                     case ConsoleKey.Enter:
                     case ConsoleKey.Spacebar:
                         itunes.PlayPause();
@@ -293,6 +303,13 @@ namespace iTunesListener
                             _event.Set();
                         }
                         break;
+                    case ConsoleKey.H:
+                        _event.Reset();
+                        ShowHelp();
+                        break;
+                    case ConsoleKey.O:
+                        Process.Start("https://github.com/Desz01ate/iTunesListener");
+                        break;
 
                 }
             }
@@ -308,6 +325,19 @@ namespace iTunesListener
             {
                 Console.WriteLine(string.Format(appFormat, playList[i].PlayedCount, playList[i].Name.UnknownLength_Substring(60), playList[i].Artist.UnknownLength_Substring(20), playList[i].Album.UnknownLength_Substring(40)));
             }
+        }
+        private static void ShowHelp()
+        {
+            Console.Clear();
+            var fs = new FontSharp.Font();
+            fs.SimpleWriter(new List<System.Text.StringBuilder[]>() { fs.I, fs.T, fs.U, fs.N, fs.E, fs.S, fs.Space, fs.L, fs.I, fs.S, fs.T, fs.E, fs.N, fs.E, fs.R });
+            Console.WriteLine("\nProject repository : https://github.com/Desz01ate/iTunesListener (press O to open!)");
+            Console.WriteLine("\nAvailable commands : ");
+            Console.WriteLine("\tUp Arrow : Show all track in your default playlist");
+            Console.WriteLine("\n\tDown Arrow : Show current playing track and played history");
+            Console.WriteLine("\n\tLeft/Right Arrow : Change track to previous/next respectively");
+            Console.WriteLine("\n\tSpacebar/Enter : Resume/Pause music");
+            Console.WriteLine("\n\t-/= : Decrease/Increase sound volume");
         }
     }
     class EventHandler

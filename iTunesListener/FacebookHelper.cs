@@ -19,7 +19,7 @@ namespace iTunesListener
         }
         public static void RenewAccessToken()
         {
-            var fb = new Facebook.FacebookClient(Properties.Settings.Default.AccessToken);
+            var fb = new FacebookClient(Properties.Settings.Default.AccessToken);
             dynamic param = new ExpandoObject();
             param.client_id = Properties.Settings.Default.AppID;
             param.client_secret = Properties.Settings.Default.AppSecret;
