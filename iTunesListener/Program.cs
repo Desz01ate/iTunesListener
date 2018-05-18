@@ -1,10 +1,14 @@
-﻿using Facebook;
+﻿using Colore;
+using Colore.Effects.Keyboard;
+using Colore.Effects.Mouse;
+using Facebook;
 using iTunesLib;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
@@ -15,24 +19,25 @@ namespace iTunesListener
 {
     class Program
     {
-        static string DetailsFormat = "%track - %artist";
-        static string StateFormat = "%playlist_type: %playlist_name";
-        static string PausedDetailsFormat = "%track - %artist";
-        static string PausedStateFormat = "Paused";
-        static FacebookClient fbClient;
-        static iTunesApp itunes;
-        static IITTrack track;
-        static Task actionThread;
-        static Task headerThread;
-        static Task webServiceListenerTask;
-        static Post previousPost = new Post();
-        static DateTime startTime;
         const int scale = 50;
         const string endpoint = "http://hhcssdm.somee.com/iTunesSyncer";
-        private static Thread mainThread;
-        static ManualResetEvent _event = new ManualResetEvent(true);
-        static EventHandler.ConsoleEventDelegate handler;
         const string mainHeader = "  START    |                        MUSIC   NAME                        |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
+        private static string DetailsFormat = "%track - %artist";
+        private static string StateFormat = "%playlist_type: %playlist_name";
+        private static string PausedDetailsFormat = "%track - %artist";
+        private static string PausedStateFormat = "Paused";
+        private static FacebookClient fbClient;
+        private static iTunesApp itunes;
+        private static IITTrack track;
+        private static Task actionThread;
+        private static Task headerThread;
+        private static Task webServiceListenerTask;
+        private static Post previousPost = new Post();
+        private static DateTime startTime;
+        private static Thread chromaUpdater;
+        private static Thread mainThread;
+        private static ManualResetEvent _event = new ManualResetEvent(true);
+        private static EventHandler.ConsoleEventDelegate handler;
 
         public static void Main(string[] args)
         {
@@ -50,19 +55,22 @@ namespace iTunesListener
             }
             catch
             {
-                string input = Microsoft.VisualBasic.Interaction.InputBox( "Please enter your renew access token here", "OAuth access token has been expired", "Access Token", -1, -1);
+                string input = Microsoft.VisualBasic.Interaction.InputBox("Please enter your renew access token here", "OAuth access token has been expired", "Access Token", -1, -1);
                 Properties.Settings.Default.Reset();
                 Properties.Settings.Default.AccessToken = input;
                 Properties.Settings.Default.Save();
             }
             finally
             {
+
                 actionThread = new Task((ActionListenerThread));
                 actionThread.Start();
                 headerThread = new Task((HeaderThread));
                 headerThread.Start();
                 webServiceListenerTask = new Task(WebServiceListener);
                 webServiceListenerTask.Start();
+                chromaUpdater = new Thread(new ThreadStart(ChromaUpdateAsync));
+                chromaUpdater.Start();
                 mainThread = new Thread(new ThreadStart(MainThread));
                 mainThread.Start();
             }
@@ -97,70 +105,7 @@ namespace iTunesListener
             }
             DiscordRPC.UpdatePresence(presence);
         }
-        private static async void WebServiceListener()
-        {
-            bool GetCommand = false;
-            HttpClient client = new HttpClient();
-            while (true)
-            {
-                try
-                {
-                    var wsCommand = await client.GetAsync($"{endpoint}/api/Status?stat");
-                    //var wsCommand = await client.GetAsync("http://localhost:54267/api/Status?stat");
-                    var result = (await wsCommand.Content.ReadAsStringAsync()).ToLower();
-                    if (result.Contains("play"))
-                    {
-                        itunes.Play();
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("pause"))
-                    {
-                        itunes.Pause();
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("stop"))
-                    {
-                        itunes.Stop();
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("next"))
-                    {
-                        itunes.NextTrack();
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("previous"))
-                    {
-                        itunes.PreviousTrack();
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("up"))
-                    {
-                        itunes.SoundVolume += 10;
-                        GetCommand = true;
-                    }
-                    else if (result.Contains("down"))
-                    {
-                        itunes.SoundVolume -= 10;
-                        GetCommand = true;
-                    }
-                    if (GetCommand)
-                    {
-                        var dict = new Dictionary<string, string>();
-                        dict.Add("stat", "");
-                        var content = new FormUrlEncodedContent(dict);
-                        var r = await client.PostAsync($"{endpoint}/StatUpdate", content);
-                        //var r = await client.PostAsync("http://localhost:54267/StatUpdate", content);
-                        r.EnsureSuccessStatusCode();
-                        GetCommand = false;
-                    }
-                    await Task.Delay(500);
-                }
-                catch
-                {
 
-                }
-            }
-        }
         private static bool ConsoleEventCallback(int eventType)
         {
             if (eventType == 2 || eventType == 0) //2 is user perform exit, 0 is application interupt (^C)
@@ -171,10 +116,12 @@ namespace iTunesListener
                 Console.Write("\n\n\nResources cleaning...");
                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
                 Console.Clear();
+                Environment.Exit(0);
             }
             return false;
 
         }
+
         private static bool ValidateiTunesInstanceState()
         {
             if (itunes == null)
@@ -244,26 +191,6 @@ namespace iTunesListener
                 Thread.Sleep(500);
             }
 
-        }
-        private static void HeaderThread()
-        {
-            while (true)
-            {
-                try
-                {
-                    var state = itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying ? "▶️ Playing" : "⏸ Pause";
-                    var track = itunes.CurrentTrack;
-                    Console.Title = itunes.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, itunes.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - itunes.PlayerPosition) + " [" + state + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(30));
-                }
-                catch
-                {
-                    Console.Title = "Nothing is playing at this time.";
-                }
-                finally
-                {
-                    Thread.Sleep(500);
-                }
-            }
         }
         private static void ActionListenerThread()
         {
@@ -338,6 +265,157 @@ namespace iTunesListener
             Console.WriteLine("\n\tLeft/Right Arrow : Change track to previous/next respectively");
             Console.WriteLine("\n\tSpacebar/Enter : Resume/Pause music");
             Console.WriteLine("\n\t-/= : Decrease/Increase sound volume");
+        }
+        private static void HeaderThread()
+        {
+            while (true)
+            {
+                try
+                {
+                    var state = itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying ? "▶️ Playing" : "⏸ Pause";
+                    var track = itunes.CurrentTrack;
+                    Console.Title = itunes.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, itunes.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - itunes.PlayerPosition) + " [" + state + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(30));
+                }
+                catch
+                {
+                    Console.Title = "Nothing is playing at this time.";
+                }
+                finally
+                {
+                    Thread.Sleep(500);
+                }
+            }
+        }
+        private static async void WebServiceListener()
+        {
+            bool GetCommand = false;
+            HttpClient client = new HttpClient();
+            while (true)
+            {
+                try
+                {
+                    var wsCommand = await client.GetAsync($"{endpoint}/api/Status?stat");
+                    //var wsCommand = await client.GetAsync("http://localhost:54267/api/Status?stat");
+                    var result = (await wsCommand.Content.ReadAsStringAsync()).ToLower();
+                    if (result.Contains("play"))
+                    {
+                        itunes.Play();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("pause"))
+                    {
+                        itunes.Pause();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("stop"))
+                    {
+                        itunes.Stop();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("next"))
+                    {
+                        itunes.NextTrack();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("previous"))
+                    {
+                        itunes.PreviousTrack();
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("up"))
+                    {
+                        itunes.SoundVolume += 10;
+                        GetCommand = true;
+                    }
+                    else if (result.Contains("down"))
+                    {
+                        itunes.SoundVolume -= 10;
+                        GetCommand = true;
+                    }
+                    if (GetCommand)
+                    {
+                        var dict = new Dictionary<string, string>();
+                        dict.Add("stat", "");
+                        var content = new FormUrlEncodedContent(dict);
+                        var r = await client.PostAsync($"{endpoint}/StatUpdate", content);
+                        //var r = await client.PostAsync("http://localhost:54267/StatUpdate", content);
+                        r.EnsureSuccessStatusCode();
+                        GetCommand = false;
+                    }
+                    await Task.Delay(500);
+                }
+                catch
+                {
+
+                }
+            }
+        }
+        private static async void ChromaUpdateAsync()
+        {
+            var Smoke = new Colore.Data.Color(0x111111);
+            var Lemon = new Colore.Data.Color(166, 158, 128);
+            var FuckingOrange = new Colore.Data.Color(255, 40, 0);
+            var numpadKeys = new Key[] { Key.Num0, Key.Num1, Key.Num2, Key.Num3, Key.Num4, Key.Num5, Key.Num6, Key.Num7, Key.Num8, Key.Num9 }.ToList();
+            var dPadKeys = new Key[] { Key.D1, Key.D2, Key.D3, Key.D3, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0 }.ToList();
+            var functionKeys = new Key[] { Key.F1, Key.F2, Key.F3, Key.F4, Key.F5, Key.F6, Key.F7, Key.F8, Key.F9, Key.F10, Key.F11 }.ToList();
+            var mouseStrips = Enum.GetValues(typeof(Led)).Cast<Led>().ToList();
+            var keyboardGrid = KeyboardCustom.Create();
+            var mouseGrid = MouseCustom.Create();
+            var chroma = await ColoreProvider.CreateNativeAsync();
+            while (true)
+            {
+                try
+                {
+                    var currentTime = TimeSpan.FromSeconds(itunes.PlayerPosition);
+                    var secString = currentTime.Seconds.ToString();
+                    var percentage = (int)(((double)itunes.PlayerPosition / track.Duration) * 10);
+                    keyboardGrid[Key.Up] = Colore.Data.Color.Pink;
+                    keyboardGrid[Key.Down] = Colore.Data.Color.Pink;
+                    keyboardGrid[Key.Left] = Colore.Data.Color.Pink;
+                    keyboardGrid[Key.Right] = Colore.Data.Color.Pink;
+                    keyboardGrid[Key.OemEquals] = Colore.Data.Color.Purple;
+                    keyboardGrid[Key.OemMinus] = Colore.Data.Color.HotPink;
+                    keyboardGrid[Key.O] = Colore.Data.Color.Green;
+                    keyboardGrid[Key.H] = Colore.Data.Color.Blue;
+                    functionKeys.ForEach(key =>
+                    {
+                        keyboardGrid[key] = itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying ? Colore.Data.Color.White : Smoke;
+                    });
+                    dPadKeys.ForEach(key =>
+                    {
+                        keyboardGrid[key] = Lemon;
+                    });
+                    numpadKeys.ForEach(key => {
+                        keyboardGrid[key] = Smoke;
+                    });
+                    for (var i = 0; i < (itunes.SoundVolume / 10); i++)
+                    {
+                        keyboardGrid[dPadKeys[i]] = FuckingOrange;
+                        
+                    }
+                    if (secString.Length == 2)
+                    {
+                        keyboardGrid[numpadKeys[int.Parse(secString[0].ToString())]] = FuckingOrange;
+                        keyboardGrid[numpadKeys[int.Parse(secString[1].ToString())]] = Colore.Data.Color.Yellow;
+                    }
+                    else
+                    {
+                        keyboardGrid[numpadKeys[int.Parse(secString[0].ToString())]] = Colore.Data.Color.Yellow;
+                    }
+                    keyboardGrid[numpadKeys[currentTime.Minutes]] = Colore.Data.Color.Red;
+                    keyboardGrid[functionKeys[percentage]] = Colore.Data.Color.Red;
+                    keyboardGrid[Key.Escape] = itunes.PlayerState == ITPlayerState.ITPlayerStatePlaying ? Colore.Data.Color.Green : Colore.Data.Color.Orange;
+                    await chroma.Keyboard.SetCustomAsync(keyboardGrid);
+                }
+                catch
+                {
+
+                }
+                finally
+                {
+                    Thread.Sleep(500);
+                }
+            }
         }
     }
     class EventHandler
