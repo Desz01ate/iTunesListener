@@ -11,11 +11,11 @@ namespace iTunesListener
     class Music
     {
         [JsonIgnore]
-        private string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
+        private readonly string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
         [JsonIgnore]
-        private string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
+        private readonly string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
         [JsonIgnore]
-        private DateTime started { get; set; }
+        private DateTime Started { get; set; }
         [JsonIgnore]
         private IITTrack Track { get; set; }
         [JsonIgnore]
@@ -35,11 +35,11 @@ namespace iTunesListener
         {
             //return string.Format(appFormat, DateTime.Now.ToString("HH:mm:ss"), (Name + " - " + Album).UnknownLength_Substring(60), Artist.UnknownLength_Substring(20), Time);
 
-            return string.Format(_appFormat, started.ToString("HH:mm:ss"), (Track.Name + " - " + Track.Album).UnknownLength_Substring(60), Track.Artist.UnknownLength_Substring(20), Track.Time);
+            return string.Format(_appFormat, Started.ToString("HH:mm:ss"), (Track.Name + " - " + Track.Album).UnknownLength_Substring(60), Track.Artist.UnknownLength_Substring(20), Track.Time);
         }
         public void Set(IITTrack track)
         {
-            started = DateTime.Now;
+            Started = DateTime.Now;
             PlaylistType = "Album";
             Name = track.Name;
             Album = track.Album;

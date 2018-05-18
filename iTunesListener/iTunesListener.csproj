@@ -117,6 +117,7 @@
     <Compile Include="FacebookHelper.cs" />
     <Compile Include="HTMLHelper.cs" />
     <Compile Include="Music.cs" />
+    <Compile Include="PlayerInstance.cs" />
     <Compile Include="Post.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
