@@ -26,13 +26,13 @@ namespace iTunesListener
                 return "<a.+?href=[\"'](.+?)[\"'].+?>";
             }
         }
-        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword, string XPath, string musicName, params string[] searchingContent)
+        public static async Task<string> HTMLAgilityPackParser(string searchingKeyword, string XPath, params string[] searchingContent)
         {
-            var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+')}";
+            var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+').Replace('&','-')}";
             try
             {
                 HttpClient http = new HttpClient();
-                var response = await http.GetByteArrayAsync($"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+')}");
+                var response = await http.GetByteArrayAsync(url);
                 var input = System.Text.Encoding.UTF8.GetString(response);
                 var doc = new HtmlDocument();
                 byte[] byteArray = Encoding.ASCII.GetBytes(input);
@@ -69,14 +69,16 @@ namespace iTunesListener
 
         private static string ReFormat(string musicName, string href)
         {
-            var baseString = @"https://itunes.apple.com/th";
-            //var slash = baseString.Length; //anything behind the /album/
-            //var lastSlash = href.LastIndexOf('/');
-            //var albumName = href.Substring(slash, lastSlash - slash);
-            //baseString += musicName.ToLower().Replace(' ', '-');//href.Replace(albumName, musicName.ToLower().Replace(' ', '-'));
-            //baseString += "/" + Extension.GetOnlyDigit(href.Substring(lastSlash + 1));
-            baseString += href.Substring(href.IndexOf(@"/album/"));
-            return baseString;
+            try
+            {
+                var baseString = @"https://itunes.apple.com/th";
+                baseString += href.Substring(href.IndexOf(@"/album/"));
+                return baseString;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
 
         public static async Task<string> HTMLParser(string searchingKeyword, string regexPattern = "<img.+?src=[\"'](.+?)[\"'].+?>")
@@ -120,50 +122,14 @@ namespace iTunesListener
         }
         public static string GetMusicURL(string name, string album, string artist)
         {
-            var url = HTMLHelper.HTMLAgilityPackParser($"{album} {artist} iTunes", "//a[contains(@href,'album')]", name, "itunes", "album").Result;
-
-            if (url == string.Empty)
-            {
-                return HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
-            }
+            var url = HTMLAgilityPackParser($"{name} {album} {artist} itunes.apple.com/th", "//a[contains(@href,'album')]", "itunes").Result;
+            url = UrlCleaning(url);
+            if (url.Contains(@"/th/"))
+                return url;
             else
-            {
-                url = UrlCleaning(url);
-                if (url.Contains(@"/th/"))
-                {
-                    return url;
-                }
-                HttpClient http = new HttpClient();
-                var response = http.GetByteArrayAsync(url).Result;
-                var source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
-                if (source.Contains("We are unable to find iTunes on your computer"))
-                    url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
-                else
-                {
-                    var oldUrl = url;
-                    try
-                    {
-                        url = ReFormat(name, url);
-                        response = http.GetByteArrayAsync(url).Result;
-                        source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
-                        if (source.Contains("We are unable to find iTunes on your computer"))
-                        {
-                            url = HTMLHelper.HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
-                        }
-                    }
-                    catch
-                    {
-                        url = oldUrl;
-                    }
-                    
-                }
-                //dirty way, indeed.
-                //var httpIndex = url.IndexOf("h");
-                //var slashIndex = Extension.GetIndexOfAt(url, '/', 7);
-                //var afterSlash = url.Substring(slashIndex + 1);
-                //var songDigit = Extension.GetOnlyDigit(afterSlash);
-                //url = url.Substring(httpIndex, slashIndex - url.Substring(0, httpIndex).Length + 1) + songDigit;
-            }
+                url = ReFormat(name, url);
+            if (url == string.Empty)
+                return HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
             return url;
         }
 

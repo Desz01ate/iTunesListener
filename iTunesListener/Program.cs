@@ -27,6 +27,7 @@ namespace iTunesListener
         private const string StateFormat = "%playlist_type: %playlist_name";
         private const string PausedDetailsFormat = "%track - %artist";
         private const string PausedStateFormat = "Paused";
+        private static string currentTrackUrl = string.Empty;
         private static ColoreColor Smoke => new ColoreColor(0x111111);
         private static ColoreColor Lemon => new ColoreColor(166, 158, 128);
         private static ColoreColor FuckingOrange => new ColoreColor(255, 40, 0);
@@ -42,6 +43,7 @@ namespace iTunesListener
         private static EventHandler.ConsoleEventDelegate handler;
         private static PlayerInstance player;
         private static HttpClient client = new HttpClient();
+
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
@@ -119,7 +121,7 @@ namespace iTunesListener
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.BackgroundColor = ConsoleColor.Black;
                 Console.Write("\n\n\nResources cleaning...");
-                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
+                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.Message.Contains("Apple Music")) fbClient.Delete(post.Id); });
                 Console.Clear();
                 //Process.Start("cmd","/C taskkill -f -im iTunes.exe");
                 Environment.Exit(0);
@@ -157,6 +159,7 @@ namespace iTunesListener
                         startedTime = DateTime.Now;
                         Console.WriteLine();
                         player.Music.Set(player.Track);
+                        currentTrackUrl = HTMLHelper.GetMusicURL(player.Track.Name, player.Track.Album, player.Track.Artist);
                         new Thread(NetworkWorker).Start();
                         var addTrack = new Music();
                         addTrack.Set(player.Track);
@@ -185,11 +188,10 @@ namespace iTunesListener
                     client.PostAsync($"{endpoint}/api/Status", data);
                 }
                 catch { }
-                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.message.Contains("Apple Music")) fbClient.Delete(post.id); });
-                var url = HTMLHelper.GetMusicURL(player.Track.Name, player.Track.Album, player.Track.Artist);
+                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.Message.Contains("Apple Music")) fbClient.Delete(post.Id); });
                 dynamic param = new ExpandoObject();
                 param.message = player.Music.GetPost();
-                param.link = url;
+                param.link = currentTrackUrl;
                 fbClient.Post("me/feed", param);
             }
             catch (Exception e)
@@ -244,8 +246,11 @@ namespace iTunesListener
                         _event.Reset();
                         ShowHelp();
                         break;
-                    case ConsoleKey.O:
+                    case ConsoleKey.R:
                         Process.Start("https://github.com/Desz01ate/iTunesListener");
+                        break;
+                    case ConsoleKey.O:
+                        Process.Start(currentTrackUrl);
                         break;
 
                 }
@@ -268,13 +273,14 @@ namespace iTunesListener
             Console.Clear();
             var fs = new FontSharp.Font();
             fs.SimpleWriter(new List<StringBuilder[]>() { fs.I, fs.T, fs.U, fs.N, fs.E, fs.S, fs.Space, fs.L, fs.I, fs.S, fs.T, fs.E, fs.N, fs.E, fs.R });
-            Console.WriteLine("\nProject repository : https://github.com/Desz01ate/iTunesListener (press O to open!)");
+            Console.WriteLine("\nProject repository : https://github.com/Desz01ate/iTunesListener (press R to open!)");
             Console.WriteLine("\nAvailable commands : ");
             Console.WriteLine("\tUp Arrow : Show all track in your default playlist");
             Console.WriteLine("\n\tDown Arrow : Show current playing track and played history");
             Console.WriteLine("\n\tLeft/Right Arrow : Change track to previous/next respectively");
             Console.WriteLine("\n\tSpacebar/Enter : Resume/Pause music");
             Console.WriteLine("\n\t-/= : Decrease/Increase sound volume");
+            Console.WriteLine("\n\tR : Open current track url");
         }
         private static void HeaderThread()
         {
@@ -303,9 +309,7 @@ namespace iTunesListener
             {
                 try
                 {
-                    var wsCommand = await client.GetAsync($"{endpoint}/api/Status?stat");
-                    //var wsCommand = await client.GetAsync("http://localhost:54267/api/Status?stat");
-                    var result = (await wsCommand.Content.ReadAsStringAsync()).ToLower();
+                    var result = (await (await client.GetAsync($"{endpoint}/api/Status?stat")).Content.ReadAsStringAsync()).ToLower();
                     if (result.Contains("play"))
                     {
                         player.PlayerEngine.Play();
@@ -386,6 +390,7 @@ namespace iTunesListener
                     keyboardGrid[Key.Right] = ColoreColor.Pink;
                     keyboardGrid[Key.OemEquals] = ColoreColor.Purple;
                     keyboardGrid[Key.OemMinus] = ColoreColor.HotPink;
+                    keyboardGrid[Key.R] = ColoreColor.Green;
                     keyboardGrid[Key.O] = ColoreColor.Green;
                     keyboardGrid[Key.H] = ColoreColor.Blue;
                     for (var i = 0; i < (player.PlayerEngine.SoundVolume / 10); i++) //volume bar (D0-D9)
