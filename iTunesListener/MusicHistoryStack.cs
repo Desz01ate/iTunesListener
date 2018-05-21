@@ -1,0 +1,51 @@
+﻿using MoreLinq;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace iTunesListener
+{
+    public class MusicHistoryStack 
+    {
+        private List<Music> _history = new List<Music>();
+        private int _sizeLimit = 30;
+        public int Count => _history.Count;
+        public List<Music> Get()
+        {
+            return _history;
+        }
+        public Music Get(int index)
+        {
+            if (index > (Count-1))
+                throw new IndexOutOfRangeException();
+            return _history[index];
+        }
+        public bool Put(Music track)
+        {
+            try
+            {
+                if (_history.Count < _sizeLimit)
+                    _history.Add(track);
+                else
+                {
+                    var oldestTrackIndex = _history.IndexOf(_history.MinBy(t => t.Started));
+                    _history[oldestTrackIndex] = track;
+                }
+                return true;
+            }
+            catch(Exception e)
+            {
+                throw e;
+            }
+        }
+        public void Clear()
+        {
+            _history.Clear();
+        }
+
+
+    }
+}

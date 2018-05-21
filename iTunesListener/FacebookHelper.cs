@@ -13,9 +13,9 @@ namespace iTunesListener
     {
         struct RenewalAccessToken
         {
-            public string access_token { get; set; }
-            public string token_type { get; set; }
-            public string expires_in { get; set; }
+            public string Access_token { get; set; }
+            public string Token_type { get; set; }
+            public string Expires_in { get; set; }
         }
         public static void RenewAccessToken()
         {
@@ -27,7 +27,7 @@ namespace iTunesListener
             param.fb_exchange_token = Properties.Settings.Default.AccessToken;
             var result = fb.Get("oauth/access_token", param);
             RenewalAccessToken jsonResult = JsonConvert.DeserializeObject<RenewalAccessToken>(Convert.ToString(result));
-            Properties.Settings.Default.AccessToken = jsonResult.access_token;
+            Properties.Settings.Default.AccessToken = jsonResult.Access_token;
             Properties.Settings.Default.Save();
         }
         public static void DeletePreviousPost(ref FacebookClient fbClient,Action<Post> action)

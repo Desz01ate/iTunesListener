@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace iTunesListener
 {
-    class Music
+    public class Music
     {
         [JsonIgnore]
         private readonly string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
         [JsonIgnore]
         private readonly string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
         [JsonIgnore]
-        private DateTime Started { get; set; }
-        [JsonIgnore]
         private IITTrack Track { get; set; }
         [JsonIgnore]
         public ITPlayerState State { get; set; }
+        [JsonIgnore]
+        public DateTime Started { get; set; }
         [JsonIgnore]
         public string PlaylistType { get; private set; }
         public string Name { get; private set; }
@@ -31,7 +31,7 @@ namespace iTunesListener
             return String.Format(_postFormat, Track.Name, Track.Album, Track.Artist);
 
         }
-        public string GetConsole()
+        public override string ToString()
         {
             //return string.Format(appFormat, DateTime.Now.ToString("HH:mm:ss"), (Name + " - " + Album).UnknownLength_Substring(60), Artist.UnknownLength_Substring(20), Time);
 
