@@ -22,14 +22,13 @@ namespace iTunesListener
             DiscordPauseDetail.Text = Properties.Settings.Default.DiscordPauseDetail;
             DiscordPauseState.Text = Properties.Settings.Default.DiscordPauseState;
             FacebookShareFormat.Text = Properties.Settings.Default.FacebookFormat;
+            ChromaSDKEnable.Checked = Properties.Settings.Default.ChromaSDKEnable;
             FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
         }
-
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
         }
-
         private void SaveButton_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.AutoShare = AutoShareCheckBox.Checked;
@@ -39,25 +38,21 @@ namespace iTunesListener
             Properties.Settings.Default.DiscordPauseDetail = DiscordPauseDetail.Text;
             Properties.Settings.Default.DiscordPauseState = DiscordPauseState.Text;
             Properties.Settings.Default.FacebookFormat = FacebookShareFormat.Text;
+            Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
             Properties.Settings.Default.Save();
-            FacebookAPITextBox.Dispose();
-            AutoShareCheckBox.Dispose();
-            this.Close();
+            MessageBox.Show("Restart application for some settings to affects", "Settings", MessageBoxButtons.OK,MessageBoxIcon.Information);
+            Dispose();
         }
-
-        private void FacebookAPITextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void RevealKeyButton_Click(object sender, EventArgs e)
+        private async void RevealKeyButton_Click(object sender, EventArgs e)
         {
             FacebookAPITextBox.PasswordChar = '\0';
+            await Task.Delay(5000);
+            FacebookAPITextBox.PasswordChar = '*';
         }
 
-        private void Settings_Load(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-
+            new ColorSettings().Show();
         }
     }
 }

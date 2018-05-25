@@ -72,7 +72,8 @@ namespace iTunesListener
                 Task.Run((Action)ActionListenerThread);
                 Task.Run((Action)HeaderThread);
                 Task.Run((Action)WebServiceListener);
-                Task.Run((Action)ChromaUpdateAsync);
+                if(Properties.Settings.Default.ChromaSDKEnable)
+                    Task.Run((Action)ChromaUpdateAsync);
                 mainThread = new Thread(new ThreadStart(MainThread));
                 mainThread.Start();
             }
@@ -193,15 +194,20 @@ namespace iTunesListener
                     client.PostAsync($"{endpoint}/api/Status", data);
                 }
                 catch { }
-                FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.Message.Contains("Apple Music")) fbClient.Delete(post.Id); });
+                FacebookHelper.DeletePreviousPost(ref fbClient, post =>
+                {
+                    var indicator = Properties.Settings.Default.FacebookFormat.IndexOf(" ");
+                    if (post.Message.Contains(Properties.Settings.Default.FacebookFormat.Substring(0, indicator)))
+                        fbClient.Delete(post.Id);
+                });
                 dynamic param = new ExpandoObject();
                 param.message = player.Music.GetPost();
                 param.link = currentTrackUrl;
                 fbClient.Post("me/feed", param);
             }
-            catch (Exception e)
+            catch
             {
-                Debug.WriteLine(e.ToString());
+
             }
         }
         private static void ActionListenerThread()
@@ -377,17 +383,22 @@ namespace iTunesListener
             var headsetGrid = HeadsetCustom.Create();
             var mousepadGrid = MousepadCustom.Create();
             var chroma = await ColoreProvider.CreateNativeAsync();
+            var bg_playing = Properties.Settings.Default.Background_Playing;
+            var bg_pause = Properties.Settings.Default.Background_Pause;
+            var pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
+            var pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
+            var vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
             while (true)
             {
                 try
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
-                    var position = (Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10));
+                    var position = Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10);
                     opacity = player.PlayerEngine.SoundVolume * 0.01;
-                    var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? 255 : 0;
-                    var bgColor = new ColoreColor((byte)((255 * opacity / 10)), (byte)((backgroundDetermine * opacity / 10)), (byte)((backgroundDetermine * opacity / 10)));
-                    SetGridBackground(ref keyboardGrid, AllKeys, bgColor);
-                    SetGridBackground(ref mouseGrid, AllMouseLED, bgColor);
+                    var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
+                    var backgroundColor = new ColoreColor((byte)((backgroundDetermine.R * opacity / 10)), (byte)((backgroundDetermine.G * opacity / 10)), (byte)((backgroundDetermine.B * opacity / 10)));
+                    SetGridBackground(ref keyboardGrid, AllKeys, backgroundColor);
+                    SetGridBackground(ref mouseGrid, AllMouseLED, backgroundColor);
                     keyboardGrid[Key.Up] = ColoreColor.Pink;
                     keyboardGrid[Key.Down] = ColoreColor.Pink;
                     keyboardGrid[Key.Left] = ColoreColor.Pink;
@@ -398,15 +409,15 @@ namespace iTunesListener
                     keyboardGrid[Key.O] = ColoreColor.Green;
                     keyboardGrid[Key.H] = ColoreColor.Blue;
                     keyboardGrid[Key.S] = ColoreColor.Blue;
-                    SetPlayingTime(ref keyboardGrid,currentTime,ColoreColor.Red,FuckingOrange,ColoreColor.Yellow);
-                    SetVolumeScale(ref mouseGrid, RightStrip, FuckingOrange);
-                    SetVolumeScale(ref keyboardGrid, DPadKeys, FuckingOrange);
-                    SetPlayingPosition(ref keyboardGrid, (int)position, FunctionKeys, ColoreColor.Red);
-                    SetPlayingPosition(ref mouseGrid, (int)position, LeftStrip, ColoreColor.Red);
+                    SetPlayingTime(ref keyboardGrid, currentTime, ColoreColor.Red, FuckingOrange, ColoreColor.Yellow);
+                    SetVolumeScale(ref mouseGrid, RightStrip, vol);
+                    SetVolumeScale(ref keyboardGrid, DPadKeys, vol);
+                    SetPlayingPosition(ref keyboardGrid, (int)position, FunctionKeys, pos_fore,pos_back);
+                    SetPlayingPosition(ref mouseGrid, (int)position, LeftStrip, pos_fore,pos_back);
                     await chroma.Keyboard.SetCustomAsync(keyboardGrid);
                     await chroma.Mouse.SetGridAsync(mouseGrid);
-                    await chroma.Headset.SetAllAsync(bgColor);
-                    await chroma.Mousepad.SetAllAsync(bgColor);
+                    await chroma.Headset.SetAllAsync(backgroundColor);
+                    await chroma.Mousepad.SetAllAsync(backgroundColor);
                 }
                 catch
                 {
@@ -418,7 +429,7 @@ namespace iTunesListener
                 }
             }
         }
-        private static void SetPlayingTime(ref KeyboardCustom keyboardGrid,TimeSpan currentTime,params ColoreColor[] colors)
+        private static void SetPlayingTime(ref KeyboardCustom keyboardGrid, TimeSpan currentTime, params ColoreColor[] colors)
         {
             if (colors.Length > 3)
                 return;
@@ -448,25 +459,25 @@ namespace iTunesListener
                 keyboardGrid[DPadKeys[i]] = color;
             }
         }
-        private static void SetPlayingPosition(ref MouseCustom mouseGrid, int position, List<GridLed> leftStrip, ColoreColor red)
+        private static void SetPlayingPosition(ref MouseCustom mouseGrid, int position, List<GridLed> leftStrip, ColoreColor pos,ColoreColor background)
         {
             var currentMouseLeftPosition = (int)(position * (Convert.ToDouble(LeftStrip.Count) / 10)) - 1;
             currentMouseLeftPosition = currentMouseLeftPosition == -1 ? 0 : currentMouseLeftPosition;
             for (var i = 0; i <= currentMouseLeftPosition; i++)
             {
-                mouseGrid[LeftStrip[i]] = ColoreColor.White;
+                mouseGrid[LeftStrip[i]] = background;
             }
-            mouseGrid[LeftStrip[currentMouseLeftPosition]] = ColoreColor.Red;
+            mouseGrid[LeftStrip[currentMouseLeftPosition]] = pos;
         }
-        private static void SetPlayingPosition(ref KeyboardCustom keyboardGrid, int position, List<Key> functionKeys, ColoreColor red)
+        private static void SetPlayingPosition(ref KeyboardCustom keyboardGrid, int position, List<Key> functionKeys, ColoreColor pos, ColoreColor background)
         {
             var currentKeyboardPlayPosition = (int)(position * (Convert.ToDouble(FunctionKeys.Count) / 10)) - 1;
             currentKeyboardPlayPosition = currentKeyboardPlayPosition == -1 ? 0 : currentKeyboardPlayPosition;
             for (var i = 0; i <= currentKeyboardPlayPosition; i++) //Playing Time (F1-F12)
             {
-                keyboardGrid[FunctionKeys[i]] = ColoreColor.White;
+                keyboardGrid[FunctionKeys[i]] = background;
             }
-            keyboardGrid[FunctionKeys[currentKeyboardPlayPosition]] = ColoreColor.Red;
+            keyboardGrid[FunctionKeys[currentKeyboardPlayPosition]] = pos;
         }
         private static void SetGridBackground(ref KeyboardCustom keyboardGrid, List<Key> Keys, ColoreColor bgColor)
         {

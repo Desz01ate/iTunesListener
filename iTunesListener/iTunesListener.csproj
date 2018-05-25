@@ -125,6 +125,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorSettings.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ColorSettings.Designer.cs">
+      <DependentUpon>ColorSettings.cs</DependentUpon>
+    </Compile>
     <Compile Include="DiscordRPC.cs" />
     <Compile Include="Extension.cs" />
     <Compile Include="FacebookHelper.cs" />
@@ -174,6 +180,9 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="ColorSettings.resx">
+      <DependentUpon>ColorSettings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Settings.resx">
       <DependentUpon>Settings.cs</DependentUpon>
     </EmbeddedResource>

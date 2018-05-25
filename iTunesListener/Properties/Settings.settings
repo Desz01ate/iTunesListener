@@ -9,7 +9,7 @@
       <Value Profile="(Default)">7caf7e0f75c3f1a61208a916b824dd27</Value>
     </Setting>
     <Setting Name="AccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)">EAABZCTb3MmVYBADJOyPyQLP50OoPF2AEVvtWDZC4u8MZAb98mplyUbsWsGPZCxZB87h9ZB1x1afx9xDPA8k4KmsYMK2qD39R7gKiDSNq0b9o1NSWE0soKqk1nhCr9wbY8MHoZB23hZC6tKXkZBkECn4AJLOP8Rx0MEFucBxPL7fVw0pZCXT9Q3Ej2yV06SipuJVtBMlconytXhRgZDZD</Value>
+      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="AutoShare" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -28,6 +28,24 @@
     </Setting>
     <Setting Name="FacebookFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">Listening to %track - %album by %artist on Apple Music!</Value>
+    </Setting>
+    <Setting Name="ChromaSDKEnable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="Background_Playing" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">White</Value>
+    </Setting>
+    <Setting Name="Background_Pause" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="Position_Foreground" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
+    <Setting Name="Position_Background" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">White</Value>
+    </Setting>
+    <Setting Name="Volume" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">255, 40, 0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

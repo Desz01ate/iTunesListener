@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace iTunesListener
 {
-    public class MusicHistoryStack 
+    public class MusicHistoryStack
     {
         private List<Music> _history = new List<Music>();
         private int _sizeLimit = 30;
@@ -15,7 +15,7 @@ namespace iTunesListener
         }
         public Music Get(int index)
         {
-            if (index > (Count-1))
+            if (index < 0 || (Count - 1) < index)
                 throw new IndexOutOfRangeException();
             return _history[index];
         }
@@ -32,7 +32,7 @@ namespace iTunesListener
                 }
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }

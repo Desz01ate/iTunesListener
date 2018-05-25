@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 
 namespace iTunesListener
@@ -27,7 +28,7 @@ namespace iTunesListener
             Properties.Settings.Default.AccessToken = jsonResult.Access_token;
             Properties.Settings.Default.Save();
         }
-        public static void DeletePreviousPost(ref FacebookClient fbClient,Action<Post> action)
+        public static void DeletePreviousPost(ref FacebookClient fbClient, Action<Post> action)
         {
             try
             {
@@ -41,7 +42,6 @@ namespace iTunesListener
             }
             catch
             {
-
             }
         }
     }

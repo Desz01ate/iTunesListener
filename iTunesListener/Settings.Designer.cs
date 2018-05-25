@@ -38,6 +38,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
             this.DiscordPlayState = new System.Windows.Forms.RichTextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.DiscordPauseState = new System.Windows.Forms.RichTextBox();
@@ -46,9 +47,12 @@
             this.label4 = new System.Windows.Forms.Label();
             this.DiscordPauseDetail = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // FacebookGroupBox
@@ -102,7 +106,6 @@
             this.FacebookAPITextBox.PasswordChar = '*';
             this.FacebookAPITextBox.Size = new System.Drawing.Size(389, 20);
             this.FacebookAPITextBox.TabIndex = 1;
-            this.FacebookAPITextBox.TextChanged += new System.EventHandler(this.FacebookAPITextBox_TextChanged);
             // 
             // label2
             // 
@@ -124,9 +127,9 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(376, 568);
+            this.SaveButton.Location = new System.Drawing.Point(385, 635);
             this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(75, 23);
+            this.SaveButton.Size = new System.Drawing.Size(76, 37);
             this.SaveButton.TabIndex = 1;
             this.SaveButton.Text = "Save";
             this.SaveButton.UseVisualStyleBackColor = true;
@@ -145,10 +148,20 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(13, 148);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(826, 414);
+            this.groupBox1.Size = new System.Drawing.Size(826, 415);
             this.groupBox1.TabIndex = 2;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Discord";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label7.Location = new System.Drawing.Point(6, 256);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(389, 144);
+            this.label7.TabIndex = 10;
+            this.label7.Text = resources.GetString("label7.Text");
             // 
             // DiscordPlayState
             // 
@@ -218,31 +231,54 @@
             this.label3.TabIndex = 2;
             this.label3.Text = "Discord Pause Detail :";
             // 
-            // label7
+            // groupBox2
             // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.label7.Location = new System.Drawing.Point(6, 256);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(389, 144);
-            this.label7.TabIndex = 10;
-            this.label7.Text = resources.GetString("label7.Text");
+            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.ChromaSDKEnable);
+            this.groupBox2.Location = new System.Drawing.Point(13, 574);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(826, 55);
+            this.groupBox2.TabIndex = 3;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Razer Chroma SDK";
+            // 
+            // ChromaSDKEnable
+            // 
+            this.ChromaSDKEnable.AutoSize = true;
+            this.ChromaSDKEnable.Location = new System.Drawing.Point(6, 25);
+            this.ChromaSDKEnable.Name = "ChromaSDKEnable";
+            this.ChromaSDKEnable.Size = new System.Drawing.Size(154, 17);
+            this.ChromaSDKEnable.TabIndex = 0;
+            this.ChromaSDKEnable.Text = "Enable Razer Chroma SDK";
+            this.ChromaSDKEnable.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(738, 19);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 1;
+            this.button1.Text = "Colors...";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(849, 603);
+            this.ClientSize = new System.Drawing.Size(848, 679);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.FacebookGroupBox);
             this.Name = "Settings";
             this.Text = "Settings";
-            this.Load += new System.EventHandler(this.Settings_Load);
             this.FacebookGroupBox.ResumeLayout(false);
             this.FacebookGroupBox.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -267,5 +303,8 @@
         private System.Windows.Forms.RichTextBox DiscordPlayDetail;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.CheckBox ChromaSDKEnable;
+        private System.Windows.Forms.Button button1;
     }
 }

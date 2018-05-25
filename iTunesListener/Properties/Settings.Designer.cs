@@ -49,9 +49,7 @@ namespace iTunesListener.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("EAABZCTb3MmVYBADJOyPyQLP50OoPF2AEVvtWDZC4u8MZAb98mplyUbsWsGPZCxZB87h9ZB1x1afx9xDP" +
-            "A8k4KmsYMK2qD39R7gKiDSNq0b9o1NSWE0soKqk1nhCr9wbY8MHoZB23hZC6tKXkZBkECn4AJLOP8Rx0" +
-            "MEFucBxPL7fVw0pZCXT9Q3Ej2yV06SipuJVtBMlconytXhRgZDZD")]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string AccessToken {
             get {
                 return ((string)(this["AccessToken"]));
@@ -130,6 +128,78 @@ namespace iTunesListener.Properties {
             }
             set {
                 this["FacebookFormat"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ChromaSDKEnable {
+            get {
+                return ((bool)(this["ChromaSDKEnable"]));
+            }
+            set {
+                this["ChromaSDKEnable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public global::System.Drawing.Color Background_Playing {
+            get {
+                return ((global::System.Drawing.Color)(this["Background_Playing"]));
+            }
+            set {
+                this["Background_Playing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public global::System.Drawing.Color Background_Pause {
+            get {
+                return ((global::System.Drawing.Color)(this["Background_Pause"]));
+            }
+            set {
+                this["Background_Pause"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public global::System.Drawing.Color Position_Foreground {
+            get {
+                return ((global::System.Drawing.Color)(this["Position_Foreground"]));
+            }
+            set {
+                this["Position_Foreground"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("White")]
+        public global::System.Drawing.Color Position_Background {
+            get {
+                return ((global::System.Drawing.Color)(this["Position_Background"]));
+            }
+            set {
+                this["Position_Background"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("255, 40, 0")]
+        public global::System.Drawing.Color Volume {
+            get {
+                return ((global::System.Drawing.Color)(this["Volume"]));
+            }
+            set {
+                this["Volume"] = value;
             }
         }
     }
