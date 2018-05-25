@@ -11,5 +11,23 @@
     <Setting Name="AccessToken" Type="System.String" Scope="User">
       <Value Profile="(Default)">EAABZCTb3MmVYBADJOyPyQLP50OoPF2AEVvtWDZC4u8MZAb98mplyUbsWsGPZCxZB87h9ZB1x1afx9xDPA8k4KmsYMK2qD39R7gKiDSNq0b9o1NSWE0soKqk1nhCr9wbY8MHoZB23hZC6tKXkZBkECn4AJLOP8Rx0MEFucBxPL7fVw0pZCXT9Q3Ej2yV06SipuJVtBMlconytXhRgZDZD</Value>
     </Setting>
+    <Setting Name="AutoShare" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DiscordPlayDetail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%track - %artist</Value>
+    </Setting>
+    <Setting Name="DiscordPlayState" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%playlist_type: %playlist_name</Value>
+    </Setting>
+    <Setting Name="DiscordPauseDetail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%track - %artist</Value>
+    </Setting>
+    <Setting Name="DiscordPauseState" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Paused</Value>
+    </Setting>
+    <Setting Name="FacebookFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Listening to %track - %album by %artist on Apple Music!</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

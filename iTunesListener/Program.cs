@@ -16,6 +16,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ColoreColor = Colore.Data.Color;
+using System.Windows.Forms;
+using Colore.Effects.Headset;
+using Colore.Effects.Mousepad;
 
 namespace iTunesListener
 {
@@ -24,10 +27,6 @@ namespace iTunesListener
         private const int scale = 50;
         private const string endpoint = "http://hhcssdm.somee.com/iTunesSyncer";
         private const string mainHeader = "  COUNT    |                        TRACK   TITLE                       |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
-        private const string DetailsFormat = "%track - %artist";
-        private const string StateFormat = "%playlist_type: %playlist_name";
-        private const string PausedDetailsFormat = "%track - %artist";
-        private const string PausedStateFormat = "Paused";
         private static string currentTrackUrl = string.Empty;
         private static ColoreColor Smoke => new ColoreColor(0x111111);
         private static ColoreColor Lemon => new ColoreColor(166, 158, 128);
@@ -47,6 +46,7 @@ namespace iTunesListener
         private static PlayerInstance player;
         private static HttpClient client = new HttpClient();
 
+        [STAThread]
         public static void Main(string[] args)
         {
             var width = (100 + scale + 10) < 130 ? 100 + scale + 10 : 130;
@@ -64,7 +64,6 @@ namespace iTunesListener
             catch
             {
                 string input = Microsoft.VisualBasic.Interaction.InputBox("Please enter your renew access token here", "OAuth access token has been expired", "Access Token", -1, -1);
-                Properties.Settings.Default.Reset();
                 Properties.Settings.Default.AccessToken = input;
                 Properties.Settings.Default.Save();
             }
@@ -98,13 +97,13 @@ namespace iTunesListener
                 var presence = new DiscordRPC.RichPresence { largeImageKey = "itunes_logo_big" };
                 if (player.Music.State != (ITPlayerState)State.Playing)
                 {
-                    presence.details = Extension.TruncateString(Extension.RenderString(PausedDetailsFormat, player.Music));
-                    presence.state = Extension.TruncateString(Extension.RenderString(PausedStateFormat, player.Music));
+                    presence.details = Extension.TruncateString(Extension.RenderString(Properties.Settings.Default.DiscordPauseDetail, player.Music));
+                    presence.state = Extension.TruncateString(Extension.RenderString(Properties.Settings.Default.DiscordPauseState, player.Music));
                 }
                 else
                 {
-                    presence.details = Extension.TruncateString(Extension.RenderString(DetailsFormat, player.Music));
-                    presence.state = Extension.TruncateString(Extension.RenderString(StateFormat, player.Music));
+                    presence.details = Extension.TruncateString(Extension.RenderString(Properties.Settings.Default.DiscordPlayDetail, player.Music));
+                    presence.state = Extension.TruncateString(Extension.RenderString(Properties.Settings.Default.DiscordPlayState, player.Music));
                     presence.startTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() - player.PlayerEngine.PlayerPosition;
                     presence.endTimestamp = DateTimeOffset.Now.ToUnixTimeSeconds() + (player.PlayerEngine.CurrentTrack.Duration - player.PlayerEngine.PlayerPosition);
                 }
@@ -166,7 +165,10 @@ namespace iTunesListener
                         var addTrack = new Music();
                         addTrack.Set(player.Track);
                         PlayedList.Put(addTrack);
-                        new Thread(NetworkWorker).Start();
+                        if (Properties.Settings.Default.AutoShare)
+                        {
+                            new Thread(NetworkWorker).Start();
+                        }
                     }
                     UpdatePresence();
                     Console.Write(player.Music.ToString());
@@ -195,7 +197,7 @@ namespace iTunesListener
                 dynamic param = new ExpandoObject();
                 param.message = player.Music.GetPost();
                 param.link = currentTrackUrl;
-                //fbClient.Post("me/feed", param);
+                fbClient.Post("me/feed", param);
             }
             catch (Exception e)
             {
@@ -252,6 +254,10 @@ namespace iTunesListener
                     case ConsoleKey.O:
                         Process.Start(currentTrackUrl);
                         break;
+                    case ConsoleKey.S:
+                        Application.EnableVisualStyles();
+                        Application.Run(new Settings());
+                        break;
                     case ConsoleKey.Escape:
                         ConsoleEventCallback(2);
                         break;
@@ -283,6 +289,7 @@ namespace iTunesListener
             Console.WriteLine("\n\tSpacebar/Enter : Resume/Pause music");
             Console.WriteLine("\n\t-/= : Decrease/Increase sound volume");
             Console.WriteLine("\n\tO : Open current track url");
+            Console.WriteLine("\n\tS : Open settings");
         }
         private static void HeaderThread()
         {
@@ -367,6 +374,8 @@ namespace iTunesListener
             var opacity = 0.5;
             var keyboardGrid = KeyboardCustom.Create();
             var mouseGrid = MouseCustom.Create();
+            var headsetGrid = HeadsetCustom.Create();
+            var mousepadGrid = MousepadCustom.Create();
             var chroma = await ColoreProvider.CreateNativeAsync();
             while (true)
             {
@@ -388,6 +397,7 @@ namespace iTunesListener
                     keyboardGrid[Key.R] = ColoreColor.Green;
                     keyboardGrid[Key.O] = ColoreColor.Green;
                     keyboardGrid[Key.H] = ColoreColor.Blue;
+                    keyboardGrid[Key.S] = ColoreColor.Blue;
                     SetPlayingTime(ref keyboardGrid,currentTime,ColoreColor.Red,FuckingOrange,ColoreColor.Yellow);
                     SetVolumeScale(ref mouseGrid, RightStrip, FuckingOrange);
                     SetVolumeScale(ref keyboardGrid, DPadKeys, FuckingOrange);
@@ -395,6 +405,8 @@ namespace iTunesListener
                     SetPlayingPosition(ref mouseGrid, (int)position, LeftStrip, ColoreColor.Red);
                     await chroma.Keyboard.SetCustomAsync(keyboardGrid);
                     await chroma.Mouse.SetGridAsync(mouseGrid);
+                    await chroma.Headset.SetAllAsync(bgColor);
+                    await chroma.Mousepad.SetAllAsync(bgColor);
                 }
                 catch
                 {

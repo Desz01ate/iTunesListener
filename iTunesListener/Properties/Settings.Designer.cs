@@ -12,7 +12,7 @@ namespace iTunesListener.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.7.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -58,6 +58,78 @@ namespace iTunesListener.Properties {
             }
             set {
                 this["AccessToken"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AutoShare {
+            get {
+                return ((bool)(this["AutoShare"]));
+            }
+            set {
+                this["AutoShare"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%track - %artist")]
+        public string DiscordPlayDetail {
+            get {
+                return ((string)(this["DiscordPlayDetail"]));
+            }
+            set {
+                this["DiscordPlayDetail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%playlist_type: %playlist_name")]
+        public string DiscordPlayState {
+            get {
+                return ((string)(this["DiscordPlayState"]));
+            }
+            set {
+                this["DiscordPlayState"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("%track - %artist")]
+        public string DiscordPauseDetail {
+            get {
+                return ((string)(this["DiscordPauseDetail"]));
+            }
+            set {
+                this["DiscordPauseDetail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Paused")]
+        public string DiscordPauseState {
+            get {
+                return ((string)(this["DiscordPauseState"]));
+            }
+            set {
+                this["DiscordPauseState"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Listening to %track - %album by %artist on Apple Music!")]
+        public string FacebookFormat {
+            get {
+                return ((string)(this["FacebookFormat"]));
+            }
+            set {
+                this["FacebookFormat"] = value;
             }
         }
     }
