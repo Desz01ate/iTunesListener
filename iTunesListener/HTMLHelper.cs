@@ -122,7 +122,7 @@ namespace iTunesListener
         }
         public static string GetMusicURL(string name, string album, string artist)
         {
-            var url = HTMLAgilityPackParser($"{name} {album} {artist} itunes.apple.com/th", "//a[contains(@href,'album')]", "itunes").Result;
+            var url = HTMLAgilityPackParser($"{album} {artist} itunes.apple.com/th", "//a[contains(@href,'album')]", "itunes.apple.com").Result;
             url = UrlCleaning(url);
             if (url.Contains(@"/th/"))
                 return url;
