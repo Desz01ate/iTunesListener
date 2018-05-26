@@ -53,6 +53,7 @@
             this.ResetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
+            this.BackgroundFadeEnable = new System.Windows.Forms.CheckBox();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -237,6 +238,7 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.BackgroundFadeEnable);
             this.groupBox2.Controls.Add(this.button1);
             this.groupBox2.Controls.Add(this.ChromaSDKEnable);
             this.groupBox2.Location = new System.Drawing.Point(13, 574);
@@ -296,6 +298,16 @@
             this.WebServiceListeningEnable.Text = "Enable application control over web service";
             this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
             // 
+            // BackgroundFadeEnable
+            // 
+            this.BackgroundFadeEnable.AutoSize = true;
+            this.BackgroundFadeEnable.Location = new System.Drawing.Point(210, 25);
+            this.BackgroundFadeEnable.Name = "BackgroundFadeEnable";
+            this.BackgroundFadeEnable.Size = new System.Drawing.Size(207, 17);
+            this.BackgroundFadeEnable.TabIndex = 2;
+            this.BackgroundFadeEnable.Text = "Background fade according to volume";
+            this.BackgroundFadeEnable.UseVisualStyleBackColor = true;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -350,5 +362,6 @@
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox WebServiceListeningEnable;
+        private System.Windows.Forms.CheckBox BackgroundFadeEnable;
     }
 }

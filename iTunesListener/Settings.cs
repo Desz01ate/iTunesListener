@@ -24,6 +24,7 @@ namespace iTunesListener
             FacebookShareFormat.Text = Properties.Settings.Default.FacebookFormat;
             ChromaSDKEnable.Checked = Properties.Settings.Default.ChromaSDKEnable;
             WebServiceListeningEnable.Checked = Properties.Settings.Default.WebServiceListening;
+            BackgroundFadeEnable.Checked = Properties.Settings.Default.BackgroundFadeEnable;
             FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -41,6 +42,7 @@ namespace iTunesListener
             Properties.Settings.Default.FacebookFormat = FacebookShareFormat.Text;
             Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
             Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
+            Properties.Settings.Default.BackgroundFadeEnable = BackgroundFadeEnable.Checked;
             Properties.Settings.Default.Save();
             MessageBox.Show("Restart application for some settings to take effect.", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();

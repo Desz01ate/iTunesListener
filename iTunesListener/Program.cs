@@ -32,7 +32,7 @@ namespace iTunesListener
         private static ColoreColor Lemon => new ColoreColor(166, 158, 128);
         private static ColoreColor FuckingOrange => new ColoreColor(255, 40, 0);
         private static List<Key> NumpadKeys => new List<Key>() { Key.Num0, Key.Num1, Key.Num2, Key.Num3, Key.Num4, Key.Num5, Key.Num6, Key.Num7, Key.Num8, Key.Num9 };
-        private static List<Key> DPadKeys => new List<Key>() { Key.D1, Key.D2, Key.D3, Key.D3, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0 };
+        private static List<Key> DPadKeys => new List<Key>() { Key.D1, Key.D2, Key.D3, Key.D4, Key.D5, Key.D6, Key.D7, Key.D8, Key.D9, Key.D0 };
         private static List<Key> FunctionKeys => new List<Key>() { Key.F1, Key.F2, Key.F3, Key.F4, Key.F5, Key.F6, Key.F7, Key.F8, Key.F9, Key.F10, Key.F11, Key.F12 };
         private static List<Key> AllKeys = Enum.GetValues(typeof(Key)).Cast<Key>().ToList();
         private static List<GridLed> AllMouseLED => Enum.GetValues(typeof(GridLed)).Cast<GridLed>().ToList();
@@ -382,9 +382,17 @@ namespace iTunesListener
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
                     var position = Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10);
-                    opacity = player.PlayerEngine.SoundVolume * 0.01;
                     var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
-                    var backgroundColor = new ColoreColor((byte)((backgroundDetermine.R * opacity / 10)), (byte)((backgroundDetermine.G * opacity / 10)), (byte)((backgroundDetermine.B * opacity / 10)));
+                    ColoreColor backgroundColor;
+                    if (Properties.Settings.Default.BackgroundFadeEnable)
+                    {
+                        opacity = player.PlayerEngine.SoundVolume * 0.01;
+                        backgroundColor = new ColoreColor((byte)((backgroundDetermine.R * opacity / 10)), (byte)((backgroundDetermine.G * opacity / 10)), (byte)((backgroundDetermine.B * opacity / 10)));
+                    }
+                    else
+                    {
+                        backgroundColor = new ColoreColor((byte)((backgroundDetermine.R / 10)), (byte)((backgroundDetermine.G / 10)), (byte)((backgroundDetermine.B / 10)));
+                    }
                     SetGridBackground(ref keyboardGrid, AllKeys, backgroundColor);
                     SetGridBackground(ref mouseGrid, AllMouseLED, backgroundColor);
                     keyboardGrid[Key.Up] = ColoreColor.Pink;
