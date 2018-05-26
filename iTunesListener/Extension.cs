@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace iTunesListener
 {
@@ -95,6 +97,11 @@ namespace iTunesListener
                 }
             }
             return -1;
+        }
+        public static void Restart()
+        {
+            Process.Start(Application.StartupPath + "\\iTunesListener.exe");
+            Process.GetCurrentProcess().Kill();
         }
     }
 }

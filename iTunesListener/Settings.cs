@@ -23,6 +23,7 @@ namespace iTunesListener
             DiscordPauseState.Text = Properties.Settings.Default.DiscordPauseState;
             FacebookShareFormat.Text = Properties.Settings.Default.FacebookFormat;
             ChromaSDKEnable.Checked = Properties.Settings.Default.ChromaSDKEnable;
+            WebServiceListeningEnable.Checked = Properties.Settings.Default.WebServiceListening;
             FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -39,8 +40,9 @@ namespace iTunesListener
             Properties.Settings.Default.DiscordPauseState = DiscordPauseState.Text;
             Properties.Settings.Default.FacebookFormat = FacebookShareFormat.Text;
             Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
+            Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
             Properties.Settings.Default.Save();
-            MessageBox.Show("Restart application for some settings to affects", "Settings", MessageBoxButtons.OK,MessageBoxIcon.Information);
+            MessageBox.Show("Restart application for some settings to affects", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();
         }
         private async void RevealKeyButton_Click(object sender, EventArgs e)
@@ -53,6 +55,16 @@ namespace iTunesListener
         private void button1_Click(object sender, EventArgs e)
         {
             new ColorSettings().Show();
+        }
+
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Do you want to reset all settings?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+            {
+                Properties.Settings.Default.Reset();
+                Properties.Settings.Default.Save();
+                Extension.Restart();
+            }
         }
     }
 }

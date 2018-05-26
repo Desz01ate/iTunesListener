@@ -48,11 +48,15 @@
             this.DiscordPauseDetail = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
+            this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
+            this.ResetButton = new System.Windows.Forms.Button();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // FacebookGroupBox
@@ -127,7 +131,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(385, 635);
+            this.SaveButton.Location = new System.Drawing.Point(332, 696);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(76, 37);
             this.SaveButton.TabIndex = 1;
@@ -242,16 +246,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Razer Chroma SDK";
             // 
-            // ChromaSDKEnable
-            // 
-            this.ChromaSDKEnable.AutoSize = true;
-            this.ChromaSDKEnable.Location = new System.Drawing.Point(6, 25);
-            this.ChromaSDKEnable.Name = "ChromaSDKEnable";
-            this.ChromaSDKEnable.Size = new System.Drawing.Size(154, 17);
-            this.ChromaSDKEnable.TabIndex = 0;
-            this.ChromaSDKEnable.Text = "Enable Razer Chroma SDK";
-            this.ChromaSDKEnable.UseVisualStyleBackColor = true;
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(738, 19);
@@ -262,11 +256,53 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // ChromaSDKEnable
+            // 
+            this.ChromaSDKEnable.AutoSize = true;
+            this.ChromaSDKEnable.Location = new System.Drawing.Point(6, 25);
+            this.ChromaSDKEnable.Name = "ChromaSDKEnable";
+            this.ChromaSDKEnable.Size = new System.Drawing.Size(154, 17);
+            this.ChromaSDKEnable.TabIndex = 0;
+            this.ChromaSDKEnable.Text = "Enable Razer Chroma SDK";
+            this.ChromaSDKEnable.UseVisualStyleBackColor = true;
+            // 
+            // ResetButton
+            // 
+            this.ResetButton.Location = new System.Drawing.Point(441, 696);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(76, 37);
+            this.ResetButton.TabIndex = 4;
+            this.ResetButton.Text = "Reset";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.WebServiceListeningEnable);
+            this.groupBox3.Location = new System.Drawing.Point(13, 635);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(826, 53);
+            this.groupBox3.TabIndex = 5;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Web Service Control";
+            // 
+            // WebServiceListeningEnable
+            // 
+            this.WebServiceListeningEnable.AutoSize = true;
+            this.WebServiceListeningEnable.Location = new System.Drawing.Point(6, 22);
+            this.WebServiceListeningEnable.Name = "WebServiceListeningEnable";
+            this.WebServiceListeningEnable.Size = new System.Drawing.Size(232, 17);
+            this.WebServiceListeningEnable.TabIndex = 0;
+            this.WebServiceListeningEnable.Text = "Enable application control over web service";
+            this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(848, 679);
+            this.ClientSize = new System.Drawing.Size(848, 748);
+            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.SaveButton);
@@ -279,6 +315,8 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -306,5 +344,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox ChromaSDKEnable;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.CheckBox WebServiceListeningEnable;
     }
 }

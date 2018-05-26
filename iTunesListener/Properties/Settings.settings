@@ -9,7 +9,7 @@
       <Value Profile="(Default)">7caf7e0f75c3f1a61208a916b824dd27</Value>
     </Setting>
     <Setting Name="AccessToken" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
+      <Value Profile="(Default)">abcde</Value>
     </Setting>
     <Setting Name="AutoShare" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -46,6 +46,9 @@
     </Setting>
     <Setting Name="Volume" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">255, 40, 0</Value>
+    </Setting>
+    <Setting Name="WebServiceListening" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -49,7 +49,7 @@ namespace iTunesListener.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        [global::System.Configuration.DefaultSettingValueAttribute("abcde")]
         public string AccessToken {
             get {
                 return ((string)(this["AccessToken"]));
@@ -200,6 +200,18 @@ namespace iTunesListener.Properties {
             }
             set {
                 this["Volume"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool WebServiceListening {
+            get {
+                return ((bool)(this["WebServiceListening"]));
+            }
+            set {
+                this["WebServiceListening"] = value;
             }
         }
     }

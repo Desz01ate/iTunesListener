@@ -38,7 +38,8 @@ namespace iTunesListener
                 var data = Convert.ToString(result.posts.data);
                 List<Post> jsonArray = JsonConvert.DeserializeObject<List<Post>>(data);
                 var previousPost = new Post();
-                jsonArray.ForEach(action);
+                System.Threading.Tasks.Parallel.ForEach(jsonArray, action);
+                //jsonArray.ForEach(action);
             }
             catch
             {
