@@ -21,8 +21,7 @@ namespace iTunesListener
         }
         public static string RenderString(string template, Music track)
         {
-            return template.Replace("%artist", track.Artist).Replace("%track", track.Name)
-                .Replace("%playlist_type", track.PlaylistType).Replace("%playlist_name", track.Album).Replace("%album",track.Album);
+            return template.Replace("%artist", track.Artist).Replace("%track", track.Name).Replace("%playlist_type", track.PlaylistType).Replace("%playlist_name", track.Album).Replace("%album",track.Album);
         }
         public static string ToMinutes(this long elapsedMilliseconds)
         {

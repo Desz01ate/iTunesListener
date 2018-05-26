@@ -36,11 +36,17 @@ namespace iTunesListener
             VOL_RED.Text = savingColor[4].R.ToString();
             VOL_GREEN.Text = savingColor[4].G.ToString();
             VOL_BLUE.Text = savingColor[4].B.ToString();
+            preview_bg_playing.BackColor = savingColor[0];
+            preview_bg_pause.BackColor = savingColor[1];
+            preview_pos_foreground.BackColor = savingColor[2];
+            preview_pos_background.BackColor = savingColor[3];
+            preview_vol_scale.BackColor = savingColor[4];
         }
 
         private void Picker(object sender, EventArgs e)
         {
             TextBox r, g, b;
+            PictureBox p = null;
             r = null;
             g = null;
             b = null;
@@ -52,37 +58,42 @@ namespace iTunesListener
                     r = BG_PLAYING_RED;
                     g = BG_PLAYING_GREEN;
                     b = BG_PLAYING_BLUE;
+                    p = preview_bg_playing;
                     i = 0;
                     break;
                 case "bgPausePicker":
                     r = BG_PAUSE_RED;
                     g = BG_PAUSE_GREEN;
                     b = BG_PAUSE_BLUE;
+                    p = preview_bg_pause;
                     i = 1;
                     break;
                 case "playPosForePicker":
                     r = PLAYPOS_FORE_RED;
                     g = PLAYPOS_FORE_GREEN;
                     b = PLAYPOS_FORE_BLUE;
+                    p = preview_pos_foreground;
                     i = 2;
                     break;
                 case "playPosBackPicker":
                     r = PLAYPOS_BACK_RED;
                     g = PLAYPOS_BACK_GREEN;
                     b = PLAYPOS_BACK_BLUE;
+                    p = preview_pos_background;
                     i = 3;
                     break;
                 case "VolPicker":
                     r = VOL_RED;
                     g = VOL_GREEN;
                     b = VOL_BLUE;
+                    p = preview_vol_scale;
                     i = 4;
                     break;
             }
-            SetColorRGB(i, r, g, b);
+            SetColorRGB(i, r, g, b, p);
         }
 
-        private void SetColorRGB(int index, TextBox r, TextBox g, TextBox b)
+        private void SetColorRGB(int index, TextBox r, TextBox g, TextBox b, PictureBox p)
         {
             DialogResult result = ColorPickerDialog.ShowDialog();
             if (result == DialogResult.OK)
@@ -92,6 +103,7 @@ namespace iTunesListener
                 g.Text = selectedColor.G.ToString();
                 b.Text = selectedColor.B.ToString();
                 savingColor[index] = selectedColor;
+                p.BackColor = selectedColor;
             }
         }
 

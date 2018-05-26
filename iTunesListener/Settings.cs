@@ -42,7 +42,7 @@ namespace iTunesListener
             Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
             Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
             Properties.Settings.Default.Save();
-            MessageBox.Show("Restart application for some settings to affects", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show("Restart application for some settings to take effect.", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();
         }
         private async void RevealKeyButton_Click(object sender, EventArgs e)

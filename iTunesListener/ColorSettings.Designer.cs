@@ -29,6 +29,12 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.preview_vol_scale = new System.Windows.Forms.PictureBox();
+            this.preview_pos_background = new System.Windows.Forms.PictureBox();
+            this.preview_pos_foreground = new System.Windows.Forms.PictureBox();
+            this.preview_bg_pause = new System.Windows.Forms.PictureBox();
+            this.preview_bg_playing = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.VolPicker = new System.Windows.Forms.Button();
             this.playPosBackPicker = new System.Windows.Forms.Button();
             this.playPosForePicker = new System.Windows.Forms.Button();
@@ -58,12 +64,21 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.ColorPickerDialog = new System.Windows.Forms.ColorDialog();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_vol_scale)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pos_background)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pos_foreground)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_bg_pause)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_bg_playing)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.preview_vol_scale);
+            this.groupBox1.Controls.Add(this.preview_pos_background);
+            this.groupBox1.Controls.Add(this.preview_pos_foreground);
+            this.groupBox1.Controls.Add(this.preview_bg_pause);
+            this.groupBox1.Controls.Add(this.preview_bg_playing);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.VolPicker);
             this.groupBox1.Controls.Add(this.playPosBackPicker);
@@ -95,14 +110,64 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(13, 13);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(557, 425);
+            this.groupBox1.Size = new System.Drawing.Size(690, 425);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Razer Chroma SDK Color Panel";
             // 
+            // preview_vol_scale
+            // 
+            this.preview_vol_scale.Location = new System.Drawing.Point(161, 258);
+            this.preview_vol_scale.Name = "preview_vol_scale";
+            this.preview_vol_scale.Size = new System.Drawing.Size(140, 21);
+            this.preview_vol_scale.TabIndex = 36;
+            this.preview_vol_scale.TabStop = false;
+            // 
+            // preview_pos_background
+            // 
+            this.preview_pos_background.Location = new System.Drawing.Point(161, 193);
+            this.preview_pos_background.Name = "preview_pos_background";
+            this.preview_pos_background.Size = new System.Drawing.Size(140, 21);
+            this.preview_pos_background.TabIndex = 35;
+            this.preview_pos_background.TabStop = false;
+            // 
+            // preview_pos_foreground
+            // 
+            this.preview_pos_foreground.Location = new System.Drawing.Point(160, 161);
+            this.preview_pos_foreground.Name = "preview_pos_foreground";
+            this.preview_pos_foreground.Size = new System.Drawing.Size(140, 21);
+            this.preview_pos_foreground.TabIndex = 34;
+            this.preview_pos_foreground.TabStop = false;
+            // 
+            // preview_bg_pause
+            // 
+            this.preview_bg_pause.Location = new System.Drawing.Point(160, 103);
+            this.preview_bg_pause.Name = "preview_bg_pause";
+            this.preview_bg_pause.Size = new System.Drawing.Size(140, 21);
+            this.preview_bg_pause.TabIndex = 33;
+            this.preview_bg_pause.TabStop = false;
+            // 
+            // preview_bg_playing
+            // 
+            this.preview_bg_playing.Location = new System.Drawing.Point(160, 70);
+            this.preview_bg_playing.Name = "preview_bg_playing";
+            this.preview_bg_playing.Size = new System.Drawing.Size(140, 21);
+            this.preview_bg_playing.TabIndex = 32;
+            this.preview_bg_playing.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(325, 396);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 31;
+            this.button1.Text = "Apply";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // VolPicker
             // 
-            this.VolPicker.Location = new System.Drawing.Point(521, 258);
+            this.VolPicker.Location = new System.Drawing.Point(643, 258);
             this.VolPicker.Name = "VolPicker";
             this.VolPicker.Size = new System.Drawing.Size(28, 23);
             this.VolPicker.TabIndex = 30;
@@ -112,7 +177,7 @@
             // 
             // playPosBackPicker
             // 
-            this.playPosBackPicker.Location = new System.Drawing.Point(521, 193);
+            this.playPosBackPicker.Location = new System.Drawing.Point(643, 193);
             this.playPosBackPicker.Name = "playPosBackPicker";
             this.playPosBackPicker.Size = new System.Drawing.Size(28, 23);
             this.playPosBackPicker.TabIndex = 29;
@@ -122,7 +187,7 @@
             // 
             // playPosForePicker
             // 
-            this.playPosForePicker.Location = new System.Drawing.Point(521, 161);
+            this.playPosForePicker.Location = new System.Drawing.Point(643, 161);
             this.playPosForePicker.Name = "playPosForePicker";
             this.playPosForePicker.Size = new System.Drawing.Size(28, 23);
             this.playPosForePicker.TabIndex = 28;
@@ -132,7 +197,7 @@
             // 
             // bgPausePicker
             // 
-            this.bgPausePicker.Location = new System.Drawing.Point(521, 101);
+            this.bgPausePicker.Location = new System.Drawing.Point(643, 101);
             this.bgPausePicker.Name = "bgPausePicker";
             this.bgPausePicker.Size = new System.Drawing.Size(28, 23);
             this.bgPausePicker.TabIndex = 27;
@@ -142,7 +207,7 @@
             // 
             // bgPlayingPicker
             // 
-            this.bgPlayingPicker.Location = new System.Drawing.Point(521, 69);
+            this.bgPlayingPicker.Location = new System.Drawing.Point(643, 69);
             this.bgPlayingPicker.Name = "bgPlayingPicker";
             this.bgPlayingPicker.Size = new System.Drawing.Size(28, 23);
             this.bgPlayingPicker.TabIndex = 26;
@@ -153,7 +218,7 @@
             // VOL_BLUE
             // 
             this.VOL_BLUE.Enabled = false;
-            this.VOL_BLUE.Location = new System.Drawing.Point(422, 260);
+            this.VOL_BLUE.Location = new System.Drawing.Point(544, 260);
             this.VOL_BLUE.Name = "VOL_BLUE";
             this.VOL_BLUE.Size = new System.Drawing.Size(93, 20);
             this.VOL_BLUE.TabIndex = 25;
@@ -161,7 +226,7 @@
             // VOL_GREEN
             // 
             this.VOL_GREEN.Enabled = false;
-            this.VOL_GREEN.Location = new System.Drawing.Point(304, 260);
+            this.VOL_GREEN.Location = new System.Drawing.Point(426, 260);
             this.VOL_GREEN.Name = "VOL_GREEN";
             this.VOL_GREEN.Size = new System.Drawing.Size(93, 20);
             this.VOL_GREEN.TabIndex = 23;
@@ -169,7 +234,7 @@
             // VOL_RED
             // 
             this.VOL_RED.Enabled = false;
-            this.VOL_RED.Location = new System.Drawing.Point(185, 260);
+            this.VOL_RED.Location = new System.Drawing.Point(307, 260);
             this.VOL_RED.Name = "VOL_RED";
             this.VOL_RED.Size = new System.Drawing.Size(93, 20);
             this.VOL_RED.TabIndex = 21;
@@ -186,7 +251,7 @@
             // PLAYPOS_BACK_BLUE
             // 
             this.PLAYPOS_BACK_BLUE.Enabled = false;
-            this.PLAYPOS_BACK_BLUE.Location = new System.Drawing.Point(422, 195);
+            this.PLAYPOS_BACK_BLUE.Location = new System.Drawing.Point(544, 195);
             this.PLAYPOS_BACK_BLUE.Name = "PLAYPOS_BACK_BLUE";
             this.PLAYPOS_BACK_BLUE.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_BACK_BLUE.TabIndex = 18;
@@ -194,7 +259,7 @@
             // PLAYPOS_FORE_BLUE
             // 
             this.PLAYPOS_FORE_BLUE.Enabled = false;
-            this.PLAYPOS_FORE_BLUE.Location = new System.Drawing.Point(422, 163);
+            this.PLAYPOS_FORE_BLUE.Location = new System.Drawing.Point(544, 163);
             this.PLAYPOS_FORE_BLUE.Name = "PLAYPOS_FORE_BLUE";
             this.PLAYPOS_FORE_BLUE.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_FORE_BLUE.TabIndex = 17;
@@ -202,7 +267,7 @@
             // PLAYPOS_BACK_GREEN
             // 
             this.PLAYPOS_BACK_GREEN.Enabled = false;
-            this.PLAYPOS_BACK_GREEN.Location = new System.Drawing.Point(304, 195);
+            this.PLAYPOS_BACK_GREEN.Location = new System.Drawing.Point(426, 195);
             this.PLAYPOS_BACK_GREEN.Name = "PLAYPOS_BACK_GREEN";
             this.PLAYPOS_BACK_GREEN.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_BACK_GREEN.TabIndex = 16;
@@ -210,7 +275,7 @@
             // PLAYPOS_FORE_GREEN
             // 
             this.PLAYPOS_FORE_GREEN.Enabled = false;
-            this.PLAYPOS_FORE_GREEN.Location = new System.Drawing.Point(304, 163);
+            this.PLAYPOS_FORE_GREEN.Location = new System.Drawing.Point(426, 163);
             this.PLAYPOS_FORE_GREEN.Name = "PLAYPOS_FORE_GREEN";
             this.PLAYPOS_FORE_GREEN.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_FORE_GREEN.TabIndex = 15;
@@ -218,7 +283,7 @@
             // PLAYPOS_BACK_RED
             // 
             this.PLAYPOS_BACK_RED.Enabled = false;
-            this.PLAYPOS_BACK_RED.Location = new System.Drawing.Point(185, 195);
+            this.PLAYPOS_BACK_RED.Location = new System.Drawing.Point(307, 195);
             this.PLAYPOS_BACK_RED.Name = "PLAYPOS_BACK_RED";
             this.PLAYPOS_BACK_RED.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_BACK_RED.TabIndex = 14;
@@ -226,7 +291,7 @@
             // PLAYPOS_FORE_RED
             // 
             this.PLAYPOS_FORE_RED.Enabled = false;
-            this.PLAYPOS_FORE_RED.Location = new System.Drawing.Point(185, 163);
+            this.PLAYPOS_FORE_RED.Location = new System.Drawing.Point(307, 163);
             this.PLAYPOS_FORE_RED.Name = "PLAYPOS_FORE_RED";
             this.PLAYPOS_FORE_RED.Size = new System.Drawing.Size(93, 20);
             this.PLAYPOS_FORE_RED.TabIndex = 13;
@@ -254,7 +319,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
             this.label5.ForeColor = System.Drawing.Color.Navy;
-            this.label5.Location = new System.Drawing.Point(451, 34);
+            this.label5.Location = new System.Drawing.Point(573, 34);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(32, 13);
             this.label5.TabIndex = 10;
@@ -265,7 +330,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
             this.label4.ForeColor = System.Drawing.Color.ForestGreen;
-            this.label4.Location = new System.Drawing.Point(335, 34);
+            this.label4.Location = new System.Drawing.Point(457, 34);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(41, 13);
             this.label4.TabIndex = 9;
@@ -276,7 +341,7 @@
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
             this.label3.ForeColor = System.Drawing.Color.Red;
-            this.label3.Location = new System.Drawing.Point(214, 34);
+            this.label3.Location = new System.Drawing.Point(336, 34);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(30, 13);
             this.label3.TabIndex = 8;
@@ -285,7 +350,7 @@
             // BG_PAUSE_BLUE
             // 
             this.BG_PAUSE_BLUE.Enabled = false;
-            this.BG_PAUSE_BLUE.Location = new System.Drawing.Point(422, 103);
+            this.BG_PAUSE_BLUE.Location = new System.Drawing.Point(544, 103);
             this.BG_PAUSE_BLUE.Name = "BG_PAUSE_BLUE";
             this.BG_PAUSE_BLUE.Size = new System.Drawing.Size(93, 20);
             this.BG_PAUSE_BLUE.TabIndex = 7;
@@ -293,7 +358,7 @@
             // BG_PLAYING_BLUE
             // 
             this.BG_PLAYING_BLUE.Enabled = false;
-            this.BG_PLAYING_BLUE.Location = new System.Drawing.Point(422, 71);
+            this.BG_PLAYING_BLUE.Location = new System.Drawing.Point(544, 71);
             this.BG_PLAYING_BLUE.Name = "BG_PLAYING_BLUE";
             this.BG_PLAYING_BLUE.Size = new System.Drawing.Size(93, 20);
             this.BG_PLAYING_BLUE.TabIndex = 6;
@@ -301,7 +366,7 @@
             // BG_PAUSE_GREEN
             // 
             this.BG_PAUSE_GREEN.Enabled = false;
-            this.BG_PAUSE_GREEN.Location = new System.Drawing.Point(304, 103);
+            this.BG_PAUSE_GREEN.Location = new System.Drawing.Point(426, 103);
             this.BG_PAUSE_GREEN.Name = "BG_PAUSE_GREEN";
             this.BG_PAUSE_GREEN.Size = new System.Drawing.Size(93, 20);
             this.BG_PAUSE_GREEN.TabIndex = 5;
@@ -309,7 +374,7 @@
             // BG_PLAYING_GREEN
             // 
             this.BG_PLAYING_GREEN.Enabled = false;
-            this.BG_PLAYING_GREEN.Location = new System.Drawing.Point(304, 71);
+            this.BG_PLAYING_GREEN.Location = new System.Drawing.Point(426, 71);
             this.BG_PLAYING_GREEN.Name = "BG_PLAYING_GREEN";
             this.BG_PLAYING_GREEN.Size = new System.Drawing.Size(93, 20);
             this.BG_PLAYING_GREEN.TabIndex = 4;
@@ -317,7 +382,7 @@
             // BG_PAUSE_RED
             // 
             this.BG_PAUSE_RED.Enabled = false;
-            this.BG_PAUSE_RED.Location = new System.Drawing.Point(185, 103);
+            this.BG_PAUSE_RED.Location = new System.Drawing.Point(307, 103);
             this.BG_PAUSE_RED.Name = "BG_PAUSE_RED";
             this.BG_PAUSE_RED.Size = new System.Drawing.Size(93, 20);
             this.BG_PAUSE_RED.TabIndex = 3;
@@ -325,7 +390,7 @@
             // BG_PLAYING_RED
             // 
             this.BG_PLAYING_RED.Enabled = false;
-            this.BG_PLAYING_RED.Location = new System.Drawing.Point(185, 71);
+            this.BG_PLAYING_RED.Location = new System.Drawing.Point(307, 71);
             this.BG_PLAYING_RED.Name = "BG_PLAYING_RED";
             this.BG_PLAYING_RED.Size = new System.Drawing.Size(93, 20);
             this.BG_PLAYING_RED.TabIndex = 2;
@@ -348,26 +413,24 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Background - Playing :";
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(239, 384);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 31;
-            this.button1.Text = "Apply";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // ColorSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(581, 450);
+            this.ClientSize = new System.Drawing.Size(714, 450);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "ColorSettings";
             this.Text = "ColorSettings";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_vol_scale)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pos_background)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_pos_foreground)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_bg_pause)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.preview_bg_playing)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -405,5 +468,10 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ColorDialog ColorPickerDialog;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.PictureBox preview_vol_scale;
+        private System.Windows.Forms.PictureBox preview_pos_background;
+        private System.Windows.Forms.PictureBox preview_pos_foreground;
+        private System.Windows.Forms.PictureBox preview_bg_pause;
+        private System.Windows.Forms.PictureBox preview_bg_playing;
     }
 }
