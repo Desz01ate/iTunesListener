@@ -56,27 +56,23 @@ namespace iTunesListener
             player = new PlayerInstance();
             handler = new EventHandler.ConsoleEventDelegate(ConsoleEventCallback);
             InitializeDiscod();
-            EventHandler.SetConsoleCtrlHandler(handler, true);
             try
             {
                 FacebookHelper.RenewAccessToken();
             }
             catch
             {
-                string input = Microsoft.VisualBasic.Interaction.InputBox("Please enter your renew access token here", "OAuth access token has been expired", "Access Token", -1, -1);
-                Properties.Settings.Default.AccessToken = input;
-                Properties.Settings.Default.Save();
+                MessageBox.Show("Can't evaluate Facebook OAuth Token, please check your token in settings (S) or your network connection.", "iTunesListener", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            finally
-            {
-                Task.Run((Action)ActionListenerThread);
-                Task.Run((Action)HeaderThread);
-                Task.Run((Action)WebServiceListener);
-                if (Properties.Settings.Default.ChromaSDKEnable)
-                    Task.Run((Action)ChromaUpdateAsync);
-                mainThread = new Thread(new ThreadStart(MainThread));
-                mainThread.Start();
-            }
+            EventHandler.SetConsoleCtrlHandler(handler, true);
+            Task.Run((Action)ActionListenerThread);
+            Task.Run((Action)HeaderThread);
+            Task.Run((Action)WebServiceListener);
+            if (Properties.Settings.Default.ChromaSDKEnable)
+                Task.Run((Action)ChromaUpdateAsync);
+            mainThread = new Thread(new ThreadStart(MainThread));
+            mainThread.Start();
+
         }
         private static void HandleReadyCallback() { }
         private static void HandleErrorCallback(int errorCode, string message) { }
@@ -381,7 +377,7 @@ namespace iTunesListener
                 try
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
-                    var position = Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10);
+                    var position = Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10, 2);
                     var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
                     ColoreColor backgroundColor;
                     if (Properties.Settings.Default.BackgroundFadeEnable)
@@ -408,8 +404,8 @@ namespace iTunesListener
                     SetPlayingTime(ref keyboardGrid, currentTime, ColoreColor.Red, FuckingOrange, ColoreColor.Yellow);
                     SetVolumeScale(ref mouseGrid, RightStrip, vol);
                     SetVolumeScale(ref keyboardGrid, DPadKeys, vol);
-                    SetPlayingPosition(ref keyboardGrid, (int)position, FunctionKeys, pos_fore, pos_back);
-                    SetPlayingPosition(ref mouseGrid, (int)position, LeftStrip, pos_fore, pos_back);
+                    SetPlayingPosition(ref keyboardGrid, position, FunctionKeys, pos_fore, pos_back);
+                    SetPlayingPosition(ref mouseGrid, position, LeftStrip, pos_fore, pos_back);
                     await chroma.Keyboard.SetCustomAsync(keyboardGrid);
                     await chroma.Mouse.SetGridAsync(mouseGrid);
                     await chroma.Headset.SetAllAsync(backgroundColor);
@@ -429,17 +425,10 @@ namespace iTunesListener
         {
             if (colors.Length > 3)
                 return;
-            var secString = currentTime.Seconds.ToString();
-            if (secString.Length == 2) //Playing Time (Num0-Num9)
-            {
-                keyboardGrid[NumpadKeys[int.Parse(secString[0].ToString())]] = colors[1];
-                keyboardGrid[NumpadKeys[int.Parse(secString[1].ToString())]] = colors[2];
-            }
-            else
-            {
-                keyboardGrid[NumpadKeys[int.Parse(secString[0].ToString())]] = colors[1];
-            }
+            int decimalDigit = currentTime.Seconds / 10;
             keyboardGrid[NumpadKeys[currentTime.Minutes]] = colors[0];
+            keyboardGrid[NumpadKeys[decimalDigit]] = colors[1];
+            keyboardGrid[NumpadKeys[currentTime.Seconds % 10]] = colors[2];
         }
         private static void SetVolumeScale(ref MouseCustom mouseGrid, List<GridLed> Keys, ColoreColor color)
         {
@@ -455,21 +444,19 @@ namespace iTunesListener
                 keyboardGrid[DPadKeys[i]] = color;
             }
         }
-        private static void SetPlayingPosition(ref MouseCustom mouseGrid, int position, List<GridLed> leftStrip, ColoreColor pos, ColoreColor background)
+        private static void SetPlayingPosition(ref MouseCustom mouseGrid, double position, List<GridLed> leftStrip, ColoreColor pos, ColoreColor background)
         {
-            var currentPlayPosition = (int)(position * (Convert.ToDouble(LeftStrip.Count) / 10)) - 1;
-            currentPlayPosition = currentPlayPosition == -1 ? 0 : currentPlayPosition;
-            for (var i = 0; i <= currentPlayPosition; i++)
+            var currentPlayPosition = (int)Math.Round(position * 0.6, 0); //can replace 1.1 with ((double)(leftStrip.Count - 1) / 10) for safe calculation
+            for (var i = 0; i < currentPlayPosition + 1; i++)
             {
                 mouseGrid[LeftStrip[i]] = background;
             }
             mouseGrid[LeftStrip[currentPlayPosition]] = pos;
         }
-        private static void SetPlayingPosition(ref KeyboardCustom keyboardGrid, int position, List<Key> functionKeys, ColoreColor pos, ColoreColor background)
+        private static void SetPlayingPosition(ref KeyboardCustom keyboardGrid, double position, List<Key> functionKeys, ColoreColor pos, ColoreColor background)
         {
-            var currentPlayPosition = (int)(position * (Convert.ToDouble(FunctionKeys.Count) / 10)) - 1;
-            currentPlayPosition = currentPlayPosition == -1 ? 0 : currentPlayPosition;
-            for (var i = 0; i <= currentPlayPosition; i++) //Playing Time (F1-F12)
+            var currentPlayPosition = (int)Math.Round(position * 1.1, 0); //can replace 1.1 with ((double)(functionKeys.Count - 1) / 10) for safe calculation
+            for (var i = 0; i < currentPlayPosition + 1; i++)
             {
                 keyboardGrid[FunctionKeys[i]] = background;
             }
