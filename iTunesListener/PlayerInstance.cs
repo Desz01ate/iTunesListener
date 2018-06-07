@@ -10,14 +10,8 @@ namespace iTunesListener
     }
     class PlayerInstance
     {
-        public iTunesApp PlayerEngine { get; private set; } 
-        public IITTrack Track
-        {
-            get
-            {
-                return PlayerEngine.CurrentTrack;
-            }
-        }
+        public iTunesApp PlayerEngine { get; private set; }
+        public IITTrack Track => PlayerEngine.CurrentTrack;
         public Music Music { get; set; }
         public PlayerInstance()
         {

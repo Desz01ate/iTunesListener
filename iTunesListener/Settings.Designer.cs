@@ -38,6 +38,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.SaveButton = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.DiscordRichPresenceEnable = new System.Windows.Forms.CheckBox();
             this.label7 = new System.Windows.Forms.Label();
             this.DiscordPlayState = new System.Windows.Forms.RichTextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -48,12 +49,16 @@
             this.DiscordPauseDetail = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.BackgroundFadeEnable = new System.Windows.Forms.CheckBox();
+            this.ColorSettingsButton = new System.Windows.Forms.Button();
             this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
             this.ResetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
-            this.BackgroundFadeEnable = new System.Windows.Forms.CheckBox();
+            this.HistoryStackComboBox = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.DynamicColorEnable = new System.Windows.Forms.CheckBox();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -142,6 +147,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.DiscordRichPresenceEnable);
             this.groupBox1.Controls.Add(this.label7);
             this.groupBox1.Controls.Add(this.DiscordPlayState);
             this.groupBox1.Controls.Add(this.label5);
@@ -158,19 +164,30 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Discord";
             // 
+            // DiscordRichPresenceEnable
+            // 
+            this.DiscordRichPresenceEnable.AutoSize = true;
+            this.DiscordRichPresenceEnable.Location = new System.Drawing.Point(10, 30);
+            this.DiscordRichPresenceEnable.Name = "DiscordRichPresenceEnable";
+            this.DiscordRichPresenceEnable.Size = new System.Drawing.Size(171, 17);
+            this.DiscordRichPresenceEnable.TabIndex = 3;
+            this.DiscordRichPresenceEnable.Text = "Enable Discord Rich Presence";
+            this.DiscordRichPresenceEnable.UseVisualStyleBackColor = true;
+            this.DiscordRichPresenceEnable.CheckedChanged += new System.EventHandler(this.DiscordRichPresenceEnable_CheckedChanged);
+            // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
-            this.label7.Location = new System.Drawing.Point(6, 256);
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label7.Location = new System.Drawing.Point(6, 299);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(389, 144);
+            this.label7.Size = new System.Drawing.Size(309, 108);
             this.label7.TabIndex = 10;
             this.label7.Text = resources.GetString("label7.Text");
             // 
             // DiscordPlayState
             // 
-            this.DiscordPlayState.Location = new System.Drawing.Point(10, 155);
+            this.DiscordPlayState.Location = new System.Drawing.Point(10, 198);
             this.DiscordPlayState.Name = "DiscordPlayState";
             this.DiscordPlayState.Size = new System.Drawing.Size(385, 89);
             this.DiscordPlayState.TabIndex = 9;
@@ -179,7 +196,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 138);
+            this.label5.Location = new System.Drawing.Point(7, 181);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(100, 13);
             this.label5.TabIndex = 8;
@@ -187,7 +204,7 @@
             // 
             // DiscordPauseState
             // 
-            this.DiscordPauseState.Location = new System.Drawing.Point(428, 155);
+            this.DiscordPauseState.Location = new System.Drawing.Point(428, 198);
             this.DiscordPauseState.Name = "DiscordPauseState";
             this.DiscordPauseState.Size = new System.Drawing.Size(385, 89);
             this.DiscordPauseState.TabIndex = 7;
@@ -196,7 +213,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(425, 138);
+            this.label6.Location = new System.Drawing.Point(425, 181);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(110, 13);
             this.label6.TabIndex = 6;
@@ -204,7 +221,7 @@
             // 
             // DiscordPlayDetail
             // 
-            this.DiscordPlayDetail.Location = new System.Drawing.Point(10, 37);
+            this.DiscordPlayDetail.Location = new System.Drawing.Point(10, 80);
             this.DiscordPlayDetail.Name = "DiscordPlayDetail";
             this.DiscordPlayDetail.Size = new System.Drawing.Size(385, 89);
             this.DiscordPlayDetail.TabIndex = 5;
@@ -213,7 +230,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(7, 20);
+            this.label4.Location = new System.Drawing.Point(7, 63);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(102, 13);
             this.label4.TabIndex = 4;
@@ -221,7 +238,7 @@
             // 
             // DiscordPauseDetail
             // 
-            this.DiscordPauseDetail.Location = new System.Drawing.Point(428, 37);
+            this.DiscordPauseDetail.Location = new System.Drawing.Point(428, 80);
             this.DiscordPauseDetail.Name = "DiscordPauseDetail";
             this.DiscordPauseDetail.Size = new System.Drawing.Size(385, 89);
             this.DiscordPauseDetail.TabIndex = 3;
@@ -230,7 +247,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(425, 20);
+            this.label3.Location = new System.Drawing.Point(425, 63);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(112, 13);
             this.label3.TabIndex = 2;
@@ -238,8 +255,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.DynamicColorEnable);
             this.groupBox2.Controls.Add(this.BackgroundFadeEnable);
-            this.groupBox2.Controls.Add(this.button1);
+            this.groupBox2.Controls.Add(this.ColorSettingsButton);
             this.groupBox2.Controls.Add(this.ChromaSDKEnable);
             this.groupBox2.Location = new System.Drawing.Point(13, 574);
             this.groupBox2.Name = "groupBox2";
@@ -248,15 +266,25 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Razer Chroma SDK";
             // 
-            // button1
+            // BackgroundFadeEnable
             // 
-            this.button1.Location = new System.Drawing.Point(738, 19);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 1;
-            this.button1.Text = "Colors...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.BackgroundFadeEnable.AutoSize = true;
+            this.BackgroundFadeEnable.Location = new System.Drawing.Point(210, 25);
+            this.BackgroundFadeEnable.Name = "BackgroundFadeEnable";
+            this.BackgroundFadeEnable.Size = new System.Drawing.Size(207, 17);
+            this.BackgroundFadeEnable.TabIndex = 2;
+            this.BackgroundFadeEnable.Text = "Background fade according to volume";
+            this.BackgroundFadeEnable.UseVisualStyleBackColor = true;
+            // 
+            // ColorSettingsButton
+            // 
+            this.ColorSettingsButton.Location = new System.Drawing.Point(738, 21);
+            this.ColorSettingsButton.Name = "ColorSettingsButton";
+            this.ColorSettingsButton.Size = new System.Drawing.Size(75, 23);
+            this.ColorSettingsButton.TabIndex = 1;
+            this.ColorSettingsButton.Text = "Colors...";
+            this.ColorSettingsButton.UseVisualStyleBackColor = true;
+            this.ColorSettingsButton.Click += new System.EventHandler(this.button1_Click);
             // 
             // ChromaSDKEnable
             // 
@@ -267,6 +295,7 @@
             this.ChromaSDKEnable.TabIndex = 0;
             this.ChromaSDKEnable.Text = "Enable Razer Chroma SDK";
             this.ChromaSDKEnable.UseVisualStyleBackColor = true;
+            this.ChromaSDKEnable.CheckedChanged += new System.EventHandler(this.ChromaSDKEnable_CheckedChanged);
             // 
             // ResetButton
             // 
@@ -280,33 +309,75 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.label9);
+            this.groupBox3.Controls.Add(this.label8);
+            this.groupBox3.Controls.Add(this.HistoryStackComboBox);
             this.groupBox3.Controls.Add(this.WebServiceListeningEnable);
             this.groupBox3.Location = new System.Drawing.Point(13, 635);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(826, 53);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Web Service Control";
+            this.groupBox3.Text = "Preferences";
             // 
             // WebServiceListeningEnable
             // 
             this.WebServiceListeningEnable.AutoSize = true;
-            this.WebServiceListeningEnable.Location = new System.Drawing.Point(6, 22);
+            this.WebServiceListeningEnable.Location = new System.Drawing.Point(6, 25);
             this.WebServiceListeningEnable.Name = "WebServiceListeningEnable";
             this.WebServiceListeningEnable.Size = new System.Drawing.Size(232, 17);
             this.WebServiceListeningEnable.TabIndex = 0;
             this.WebServiceListeningEnable.Text = "Enable application control over web service";
             this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
             // 
-            // BackgroundFadeEnable
+            // HistoryStackComboBox
             // 
-            this.BackgroundFadeEnable.AutoSize = true;
-            this.BackgroundFadeEnable.Location = new System.Drawing.Point(210, 25);
-            this.BackgroundFadeEnable.Name = "BackgroundFadeEnable";
-            this.BackgroundFadeEnable.Size = new System.Drawing.Size(207, 17);
-            this.BackgroundFadeEnable.TabIndex = 2;
-            this.BackgroundFadeEnable.Text = "Background fade according to volume";
-            this.BackgroundFadeEnable.UseVisualStyleBackColor = true;
+            this.HistoryStackComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.HistoryStackComboBox.FormattingEnabled = true;
+            this.HistoryStackComboBox.Items.AddRange(new object[] {
+            "0",
+            "10",
+            "20",
+            "30",
+            "40",
+            "50",
+            "60",
+            "70",
+            "80",
+            "90",
+            "100"});
+            this.HistoryStackComboBox.Location = new System.Drawing.Point(416, 20);
+            this.HistoryStackComboBox.Name = "HistoryStackComboBox";
+            this.HistoryStackComboBox.Size = new System.Drawing.Size(121, 21);
+            this.HistoryStackComboBox.TabIndex = 1;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(283, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(127, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "Music history stack size : ";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(543, 26);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(203, 13);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "( larger size will use more system memory )";
+            // 
+            // DynamicColorEnable
+            // 
+            this.DynamicColorEnable.AutoSize = true;
+            this.DynamicColorEnable.Location = new System.Drawing.Point(447, 25);
+            this.DynamicColorEnable.Name = "DynamicColorEnable";
+            this.DynamicColorEnable.Size = new System.Drawing.Size(273, 17);
+            this.DynamicColorEnable.TabIndex = 3;
+            this.DynamicColorEnable.Text = "Dynamic color update (Might decrease performance)";
+            this.DynamicColorEnable.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
@@ -358,10 +429,15 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.CheckBox ChromaSDKEnable;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button ColorSettingsButton;
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox WebServiceListeningEnable;
         private System.Windows.Forms.CheckBox BackgroundFadeEnable;
+        private System.Windows.Forms.CheckBox DiscordRichPresenceEnable;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.ComboBox HistoryStackComboBox;
+        private System.Windows.Forms.CheckBox DynamicColorEnable;
     }
 }

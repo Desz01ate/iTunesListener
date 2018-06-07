@@ -7,7 +7,7 @@ namespace iTunesListener
     public class MusicHistoryStack
     {
         private List<Music> _history = new List<Music>();
-        private int _sizeLimit = 30;
+        private int _sizeLimit => Properties.Settings.Default.HistoryStackLimit * 10;
         public int Count => _history.Count;
         public List<Music> Get()
         {
@@ -21,6 +21,8 @@ namespace iTunesListener
         }
         public bool Put(Music track)
         {
+            if (_sizeLimit == 0)
+                return false;
             try
             {
                 if (_history.Count < _sizeLimit)

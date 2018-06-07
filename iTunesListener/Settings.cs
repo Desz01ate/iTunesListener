@@ -23,13 +23,18 @@ namespace iTunesListener
             DiscordPauseState.Text = Properties.Settings.Default.DiscordPauseState;
             FacebookShareFormat.Text = Properties.Settings.Default.FacebookFormat;
             ChromaSDKEnable.Checked = Properties.Settings.Default.ChromaSDKEnable;
+            DynamicColorEnable.Checked = Properties.Settings.Default.DynamicColorEnable;
             WebServiceListeningEnable.Checked = Properties.Settings.Default.WebServiceListening;
             BackgroundFadeEnable.Checked = Properties.Settings.Default.BackgroundFadeEnable;
-            FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
+            DiscordRichPresenceEnable.Checked = Properties.Settings.Default.DiscordRichPresenceEnable;
+            HistoryStackComboBox.SelectedIndex = Properties.Settings.Default.HistoryStackLimit;
+            checkBox1_CheckedChanged(null, EventArgs.Empty);
+            DiscordRichPresenceEnable_CheckedChanged(null, EventArgs.Empty);
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
             FacebookAPITextBox.Enabled = AutoShareCheckBox.Checked;
+            FacebookShareFormat.Enabled = AutoShareCheckBox.Checked;
         }
         private void SaveButton_Click(object sender, EventArgs e)
         {
@@ -41,8 +46,11 @@ namespace iTunesListener
             Properties.Settings.Default.DiscordPauseState = DiscordPauseState.Text;
             Properties.Settings.Default.FacebookFormat = FacebookShareFormat.Text;
             Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
+            Properties.Settings.Default.DynamicColorEnable = DynamicColorEnable.Checked;
             Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
             Properties.Settings.Default.BackgroundFadeEnable = BackgroundFadeEnable.Checked;
+            Properties.Settings.Default.DiscordRichPresenceEnable = DiscordRichPresenceEnable.Checked;
+            Properties.Settings.Default.HistoryStackLimit = (byte)HistoryStackComboBox.SelectedIndex;       
             Properties.Settings.Default.Save();
             MessageBox.Show("Restart application for some settings to take effect.", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();
@@ -67,6 +75,20 @@ namespace iTunesListener
                 Properties.Settings.Default.Save();
                 Extension.Restart();
             }
+        }
+
+        private void DiscordRichPresenceEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            DiscordPlayState.Enabled = DiscordRichPresenceEnable.Checked;
+            DiscordPlayDetail.Enabled = DiscordRichPresenceEnable.Checked;
+            DiscordPauseState.Enabled = DiscordRichPresenceEnable.Checked;
+            DiscordPauseDetail.Enabled = DiscordRichPresenceEnable.Checked;
+        }
+
+        private void ChromaSDKEnable_CheckedChanged(object sender, EventArgs e)
+        {
+            BackgroundFadeEnable.Enabled = ChromaSDKEnable.Checked;
+            ColorSettingsButton.Enabled = ChromaSDKEnable.Checked;
         }
     }
 }

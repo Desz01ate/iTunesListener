@@ -30,7 +30,7 @@
       <Value Profile="(Default)">Listening to %track - %album by %artist on Apple Music!</Value>
     </Setting>
     <Setting Name="ChromaSDKEnable" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="Background_Playing" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">White</Value>
@@ -51,6 +51,15 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="BackgroundFadeEnable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DiscordRichPresenceEnable" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="HistoryStackLimit" Type="System.Byte" Scope="User">
+      <Value Profile="(Default)">3</Value>
+    </Setting>
+    <Setting Name="DynamicColorEnable" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

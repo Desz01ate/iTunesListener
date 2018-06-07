@@ -28,7 +28,7 @@ namespace iTunesListener
         }
         public static async Task<string> HTMLAgilityPackParser(string searchingKeyword, string XPath, params string[] searchingContent)
         {
-            var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+').Replace('&','-')}";
+            var url = $"https://www.google.co.th/search?q={searchingKeyword.Replace(' ', '+').Replace('&', '-')}";
             try
             {
                 HttpClient http = new HttpClient();
@@ -73,6 +73,11 @@ namespace iTunesListener
             {
                 var baseString = @"https://itunes.apple.com/th";
                 baseString += href.Substring(href.IndexOf(@"/album/"));
+                HttpClient http = new HttpClient();
+                var response = http.GetByteArrayAsync(baseString).Result;
+                var source = Encoding.GetEncoding("utf-8").GetString(response, 0, response.Length - 1);
+                if (source.Contains("We are unable to find iTunes on your computer"))
+                    return href;
                 return baseString;
             }
             catch
@@ -128,8 +133,8 @@ namespace iTunesListener
                 return url;
             else
                 url = ReFormat(name, url);
-            if (url == string.Empty)
-                return HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
+            //if (url == string.Empty)
+            //    return HTMLParser($"{name} {artist}", "<div.+?data-context-item-id=[\"'](.+?)[\"'].+?>").Result;
             return url;
         }
 

@@ -7,8 +7,6 @@ namespace iTunesListener
     public class Music
     {
         [JsonIgnore]
-        private readonly string _postFormat = "Listening to {0} - {1} by {2} on Apple Music!";
-        [JsonIgnore]
         private readonly string _appFormat = "\r[{0}] |{1,-60}|{2,-20}| {3} Minutes   ";
         [JsonIgnore]
         private IITTrack Track { get; set; }
@@ -21,12 +19,7 @@ namespace iTunesListener
         public string Name { get; private set; }
         public string Album { get; private set; }
         public string Artist { get; private set; }
-        public string GetPost()
-        {
-            //return String.Format(_postFormat, Name, Album, Artist);
-            //return String.Format(_postFormat, Track.Name, Track.Album, Track.Artist);
-            return Extension.RenderString(Properties.Settings.Default.FacebookFormat, this);
-        }
+        public string PostFormat => Extension.RenderString(Properties.Settings.Default.FacebookFormat, this);
         public override string ToString()
         {
             //return string.Format(appFormat, DateTime.Now.ToString("HH:mm:ss"), (Name + " - " + Album).UnknownLength_Substring(60), Artist.UnknownLength_Substring(20), Time);

@@ -19,6 +19,7 @@ using ColoreColor = Colore.Data.Color;
 using System.Windows.Forms;
 using Colore.Effects.Headset;
 using Colore.Effects.Mousepad;
+using System.Configuration;
 
 namespace iTunesListener
 {
@@ -26,7 +27,7 @@ namespace iTunesListener
     {
         private const int scale = 50;
         private const string endpoint = "http://hhcssdm.somee.com/iTunesSyncer";
-        private const string mainHeader = "  COUNT    |                        TRACK   TITLE                       |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
+        private const string mainHeader = "  START    |                        TRACK   TITLE                       |      ARTIST(S)     |      TRACK DURATION\n----------------------------------------------------------------------------------------------------------------------";
         private static string currentTrackUrl = string.Empty;
         private static ColoreColor Smoke => new ColoreColor(0x111111);
         private static ColoreColor Lemon => new ColoreColor(166, 158, 128);
@@ -38,7 +39,7 @@ namespace iTunesListener
         private static List<GridLed> AllMouseLED => Enum.GetValues(typeof(GridLed)).Cast<GridLed>().ToList();
         private static List<GridLed> LeftStrip => new List<GridLed>() { GridLed.LeftSide1, GridLed.LeftSide2, GridLed.LeftSide3, GridLed.LeftSide4, GridLed.LeftSide5, GridLed.LeftSide6, GridLed.LeftSide7 };
         private static List<GridLed> RightStrip => new List<GridLed>() { GridLed.RightSide1, GridLed.RightSide2, GridLed.RightSide3, GridLed.RightSide4, GridLed.RightSide5, GridLed.RightSide6, GridLed.RightSide7 };
-        private static MusicHistoryStack PlayedList = new MusicHistoryStack();
+        private static MusicHistoryStack playedList = new MusicHistoryStack();
         private static FacebookClient fbClient;
         private static Thread mainThread;
         private static ManualResetEvent _event = new ManualResetEvent(true);
@@ -122,7 +123,6 @@ namespace iTunesListener
                 Console.Write("\n\n\nResources cleaning...");
                 FacebookHelper.DeletePreviousPost(ref fbClient, post => { if (post.Message.Contains("Apple Music")) fbClient.Delete(post.Id); });
                 Console.Clear();
-                //Process.Start("cmd","/C taskkill -f -im iTunes.exe");
                 Environment.Exit(0);
             }
             return false;
@@ -161,13 +161,23 @@ namespace iTunesListener
                         currentTrackUrl = HTMLHelper.GetMusicURL(player.Track.Name, player.Track.Album, player.Track.Artist);
                         var addTrack = new Music();
                         addTrack.Set(player.Track);
-                        PlayedList.Put(addTrack);
+                        playedList.Put(addTrack);
                         if (Properties.Settings.Default.AutoShare)
                         {
                             new Thread(NetworkWorker).Start();
                         }
                     }
-                    UpdatePresence();
+                    if(Properties.Settings.Default.WebServiceListening)
+                    {
+                        try //must try this because it would cause the entire application to crash if the web service is down or not reachable
+                        {
+                            var data = new StringContent(JsonConvert.SerializeObject(player.Music), Encoding.UTF8, "application/json");
+                            client.PostAsync($"{endpoint}/api/Status", data);
+                        }
+                        catch { }
+                    }
+                    if (Properties.Settings.Default.DiscordRichPresenceEnable)
+                        UpdatePresence();
                     Console.Write(player.Music.ToString());
                 }
                 catch
@@ -180,12 +190,6 @@ namespace iTunesListener
 
         private static void NetworkWorker()
         {
-            try //must try this because it would cause the entire application to crash if the web service is down or not reachable
-            {
-                var data = new StringContent(JsonConvert.SerializeObject(player.Music), Encoding.UTF8, "application/json");
-                client.PostAsync($"{endpoint}/api/Status", data);
-            }
-            catch { }
             FacebookHelper.DeletePreviousPost(ref fbClient, post =>
             {
                 var indicator = Properties.Settings.Default.FacebookFormat.IndexOf(" ");
@@ -193,7 +197,7 @@ namespace iTunesListener
                     fbClient.Delete(post.Id);
             });
             dynamic param = new ExpandoObject();
-            param.message = player.Music.GetPost();
+            param.message = player.Music.PostFormat;
             param.link = currentTrackUrl;
             fbClient.Post("me/feed", param);
         }
@@ -229,11 +233,12 @@ namespace iTunesListener
                         {
                             Console.Clear();
                             Console.WriteLine(mainHeader);
-                            for (var i = 0; i < PlayedList.Count - 2; i++) //-2 to compensate index 0 and index n, as n track would always show on thread running
+                            for (var i = 0; i < playedList.Count - 1; i++) //-2 to compensate index 0 and index n, as n track would always show on thread running
                             {
                                 Console.WriteLine();
-                                Console.Write(PlayedList.Get(i).ToString());
+                                Console.Write(playedList.Get(i).ToString());
                             }
+                            Console.WriteLine();
                             _event.Set();
                         }
                         break;
@@ -288,16 +293,20 @@ namespace iTunesListener
         {
             while (true)
             {
-                if (player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying || player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStateStopped)
+                try
                 {
                     var state = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? "▶️ Playing" : "⏸ Pause";
                     var track = player.PlayerEngine.CurrentTrack;
                     Console.Title = player.PlayerEngine.PlayerPosition.ToMinutes() + " " + Extension.GetProgression(scale, player.PlayerEngine.PlayerPosition, track.Duration) + " " + Extension.ToMinutes(track.Duration - player.PlayerEngine.PlayerPosition) + " [" + state + "]  " + string.Format("Listening to {0} by {1}", track.Name.UnknownLength_Substring(30), track.Artist.UnknownLength_Substring(30));
                 }
-                else
+                catch
+                {
                     Console.Title = "Nothing is playing at this time.";
-                Thread.Sleep(500);
-
+                }
+                finally
+                {
+                    Thread.Sleep(500);
+                }
             }
         }
         private static async void WebServiceListener()
@@ -364,22 +373,28 @@ namespace iTunesListener
             var opacity = 0.5;
             var keyboardGrid = KeyboardCustom.Create();
             var mouseGrid = MouseCustom.Create();
-            var headsetGrid = HeadsetCustom.Create();
-            var mousepadGrid = MousepadCustom.Create();
             var chroma = await ColoreProvider.CreateNativeAsync();
             var bg_playing = Properties.Settings.Default.Background_Playing;
             var bg_pause = Properties.Settings.Default.Background_Pause;
             var pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
             var pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
             var vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
+            ColoreColor backgroundColor = default(ColoreColor);
             while (true)
             {
+                if (Properties.Settings.Default.DynamicColorEnable)
+                {
+                    bg_playing = Properties.Settings.Default.Background_Playing;
+                    bg_pause = Properties.Settings.Default.Background_Pause;
+                    pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
+                    pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
+                    vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
+                }
                 try
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
                     var position = Math.Round(((double)player.PlayerEngine.PlayerPosition / player.Track.Duration) * 10, 2);
                     var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
-                    ColoreColor backgroundColor;
                     if (Properties.Settings.Default.BackgroundFadeEnable)
                     {
                         opacity = player.PlayerEngine.SoundVolume * 0.01;
@@ -389,8 +404,8 @@ namespace iTunesListener
                     {
                         backgroundColor = new ColoreColor((byte)((backgroundDetermine.R / 10)), (byte)((backgroundDetermine.G / 10)), (byte)((backgroundDetermine.B / 10)));
                     }
-                    SetGridBackground(ref keyboardGrid, AllKeys, backgroundColor);
-                    SetGridBackground(ref mouseGrid, AllMouseLED, backgroundColor);
+                    keyboardGrid.Set(backgroundColor);
+                    mouseGrid.Set(backgroundColor);
                     keyboardGrid[Key.Up] = ColoreColor.Pink;
                     keyboardGrid[Key.Down] = ColoreColor.Pink;
                     keyboardGrid[Key.Left] = ColoreColor.Pink;
@@ -406,10 +421,6 @@ namespace iTunesListener
                     SetVolumeScale(ref keyboardGrid, DPadKeys, vol);
                     SetPlayingPosition(ref keyboardGrid, position, FunctionKeys, pos_fore, pos_back);
                     SetPlayingPosition(ref mouseGrid, position, LeftStrip, pos_fore, pos_back);
-                    await chroma.Keyboard.SetCustomAsync(keyboardGrid);
-                    await chroma.Mouse.SetGridAsync(mouseGrid);
-                    await chroma.Headset.SetAllAsync(backgroundColor);
-                    await chroma.Mousepad.SetAllAsync(backgroundColor);
                 }
                 catch
                 {
@@ -417,6 +428,10 @@ namespace iTunesListener
                 }
                 finally
                 {
+                    await chroma.Keyboard.SetCustomAsync(keyboardGrid);
+                    await chroma.Mouse.SetGridAsync(mouseGrid);
+                    await chroma.Headset.SetAllAsync(backgroundColor);
+                    await chroma.Mousepad.SetAllAsync(backgroundColor);
                     Thread.Sleep(500);
                 }
             }
@@ -462,6 +477,12 @@ namespace iTunesListener
             }
             keyboardGrid[FunctionKeys[currentPlayPosition]] = pos;
         }
+        /// <summary>
+        /// Deprecated
+        /// </summary>
+        /// <param name="keyboardGrid"></param>
+        /// <param name="Keys"></param>
+        /// <param name="bgColor"></param>
         private static void SetGridBackground(ref KeyboardCustom keyboardGrid, List<Key> Keys, ColoreColor bgColor)
         {
             foreach (var key in Keys)
@@ -469,6 +490,12 @@ namespace iTunesListener
                 keyboardGrid[key] = bgColor;
             }
         }
+        /// <summary>
+        /// Deprecated
+        /// </summary>
+        /// <param name="mouseGrid"></param>
+        /// <param name="Keys"></param>
+        /// <param name="bgColor"></param>
         private static void SetGridBackground(ref MouseCustom mouseGrid, List<GridLed> Keys, ColoreColor bgColor)
         {
             foreach (var key in Keys)

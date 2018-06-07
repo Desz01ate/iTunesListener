@@ -133,7 +133,7 @@ namespace iTunesListener.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool ChromaSDKEnable {
             get {
                 return ((bool)(this["ChromaSDKEnable"]));
@@ -224,6 +224,42 @@ namespace iTunesListener.Properties {
             }
             set {
                 this["BackgroundFadeEnable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DiscordRichPresenceEnable {
+            get {
+                return ((bool)(this["DiscordRichPresenceEnable"]));
+            }
+            set {
+                this["DiscordRichPresenceEnable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
+        public byte HistoryStackLimit {
+            get {
+                return ((byte)(this["HistoryStackLimit"]));
+            }
+            set {
+                this["HistoryStackLimit"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool DynamicColorEnable {
+            get {
+                return ((bool)(this["DynamicColorEnable"]));
+            }
+            set {
+                this["DynamicColorEnable"] = value;
             }
         }
     }
