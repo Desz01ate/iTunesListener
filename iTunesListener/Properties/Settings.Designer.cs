@@ -274,5 +274,29 @@ namespace iTunesListener.Properties {
                 this["ReverseLEDRender"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AlbumCoverRenderEnable {
+            get {
+                return ((bool)(this["AlbumCoverRenderEnable"]));
+            }
+            set {
+                this["AlbumCoverRenderEnable"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int Density {
+            get {
+                return ((int)(this["Density"]));
+            }
+            set {
+                this["Density"] = value;
+            }
+        }
     }
 }

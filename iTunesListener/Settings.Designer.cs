@@ -60,10 +60,14 @@
             this.HistoryStackComboBox = new System.Windows.Forms.ComboBox();
             this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
             this.ReverseLEDRender = new System.Windows.Forms.CheckBox();
+            this.AlbumCoverRenderEnable = new System.Windows.Forms.CheckBox();
+            this.Density = new System.Windows.Forms.TrackBar();
+            this.label10 = new System.Windows.Forms.Label();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Density)).BeginInit();
             this.SuspendLayout();
             // 
             // FacebookGroupBox
@@ -138,7 +142,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(332, 726);
+            this.SaveButton.Location = new System.Drawing.Point(332, 779);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(76, 37);
             this.SaveButton.TabIndex = 1;
@@ -256,6 +260,9 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.label10);
+            this.groupBox2.Controls.Add(this.Density);
+            this.groupBox2.Controls.Add(this.AlbumCoverRenderEnable);
             this.groupBox2.Controls.Add(this.ReverseLEDRender);
             this.groupBox2.Controls.Add(this.DynamicColorEnable);
             this.groupBox2.Controls.Add(this.BackgroundFadeEnable);
@@ -263,7 +270,7 @@
             this.groupBox2.Controls.Add(this.ChromaSDKEnable);
             this.groupBox2.Location = new System.Drawing.Point(13, 574);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(826, 85);
+            this.groupBox2.Size = new System.Drawing.Size(826, 138);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Razer Chroma SDK";
@@ -311,7 +318,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Location = new System.Drawing.Point(441, 726);
+            this.ResetButton.Location = new System.Drawing.Point(441, 779);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(76, 37);
             this.ResetButton.TabIndex = 4;
@@ -325,7 +332,7 @@
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.HistoryStackComboBox);
             this.groupBox3.Controls.Add(this.WebServiceListeningEnable);
-            this.groupBox3.Location = new System.Drawing.Point(13, 665);
+            this.groupBox3.Location = new System.Drawing.Point(13, 718);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(826, 53);
             this.groupBox3.TabIndex = 5;
@@ -391,11 +398,39 @@
             this.ReverseLEDRender.Text = "Reverse LED strip render (Razer Mamba TE / Chroma)";
             this.ReverseLEDRender.UseVisualStyleBackColor = true;
             // 
+            // AlbumCoverRenderEnable
+            // 
+            this.AlbumCoverRenderEnable.AutoSize = true;
+            this.AlbumCoverRenderEnable.Location = new System.Drawing.Point(447, 55);
+            this.AlbumCoverRenderEnable.Name = "AlbumCoverRenderEnable";
+            this.AlbumCoverRenderEnable.Size = new System.Drawing.Size(313, 17);
+            this.AlbumCoverRenderEnable.TabIndex = 5;
+            this.AlbumCoverRenderEnable.Text = "Render background according to album cover (Experimental)";
+            this.AlbumCoverRenderEnable.UseVisualStyleBackColor = true;
+            // 
+            // Density
+            // 
+            this.Density.Location = new System.Drawing.Point(117, 87);
+            this.Density.Minimum = 1;
+            this.Density.Name = "Density";
+            this.Density.Size = new System.Drawing.Size(498, 45);
+            this.Density.TabIndex = 6;
+            this.Density.Value = 1;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(7, 91);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(104, 13);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Color Density Level :";
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(848, 770);
+            this.ClientSize = new System.Drawing.Size(848, 830);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.groupBox2);
@@ -415,6 +450,7 @@
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.Density)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -452,5 +488,8 @@
         private System.Windows.Forms.ComboBox HistoryStackComboBox;
         private System.Windows.Forms.CheckBox DynamicColorEnable;
         private System.Windows.Forms.CheckBox ReverseLEDRender;
+        private System.Windows.Forms.CheckBox AlbumCoverRenderEnable;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TrackBar Density;
     }
 }

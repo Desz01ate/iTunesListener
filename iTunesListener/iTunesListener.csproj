@@ -80,6 +80,9 @@
       <HintPath>..\packages\Colore.6.0.0-unstable0185\lib\net451\Colore.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
+    <Reference Include="ColorThief.Desktop.v46, Version=1.1.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ksemenenko.ColorThief.1.1.0.3\lib\net46\ColorThief.Desktop.v46.dll</HintPath>
+    </Reference>
     <Reference Include="Facebook, Version=6.0.10.0, Culture=neutral, PublicKeyToken=58cb4f2111d1e6de, processorArchitecture=MSIL">
       <HintPath>..\packages\Facebook.7.0.6\lib\net45\Facebook.dll</HintPath>
       <EmbedInteropTypes>False</EmbedInteropTypes>
@@ -158,6 +161,8 @@
     <Compile Include="Extension.cs" />
     <Compile Include="FacebookHelper.cs" />
     <Compile Include="HTMLHelper.cs" />
+    <Compile Include="ImageHelper.cs" />
+    <Compile Include="MathHelper.cs" />
     <Compile Include="Music.cs" />
     <Compile Include="MusicHistoryStack.cs" />
     <Compile Include="PlayerInstance.cs" />

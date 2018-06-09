@@ -46,6 +46,8 @@ namespace iTunesListener
         private static EventHandler.ConsoleEventDelegate handler;
         private static PlayerInstance player;
         private static HttpClient client = new HttpClient();
+        private static bool MusicChanged = false;
+        private static ColoreColor AlbumArtworkColor = default(ColoreColor);
 
         [STAThread]
         public static void Main(string[] args)
@@ -156,6 +158,18 @@ namespace iTunesListener
                     player.Music.State = player.PlayerEngine.PlayerState;
                     if ((player.Track.Name != player.Music.Name) || (player.Track.Album != player.Music.Album)) //the IITrack object is not the same for every call
                     {
+                        /*
+                        if (Properties.Settings.Default.AlbumCoverRenderEnable)
+                        {
+                            Parallel.Invoke(delegate
+                            {
+                                var images = HTMLHelper.GetImages($"{player.Track.Name} {player.Track.Album} {player.Track.Artist} album artwork", HTMLHelper.Image_source).Result;
+                                var mostUsedColor = ImageHelper.GetMostUsedColor((System.Drawing.Bitmap)ImageHelper.GetImage(images[0]));
+                                backgroundColor = new ColoreColor((byte)mostUsedColor.R, (byte)mostUsedColor.G, (byte)mostUsedColor.B);
+                            });
+                        }
+                        */
+                        MusicChanged = true;
                         startedTime = DateTime.Now;
                         Console.WriteLine();
                         player.Music.Set(player.Track);
@@ -381,18 +395,20 @@ namespace iTunesListener
             var keyboardGrid = KeyboardCustom.Create();
             var mouseGrid = MouseCustom.Create();
             var chroma = await ColoreProvider.CreateNativeAsync();
-            var bg_playing = Properties.Settings.Default.Background_Playing;
-            var bg_pause = Properties.Settings.Default.Background_Pause;
+            var bg_playing = new ColoreColor(Properties.Settings.Default.Background_Playing.R, Properties.Settings.Default.Background_Playing.G, Properties.Settings.Default.Background_Playing.B);
+            var bg_pause = new ColoreColor(Properties.Settings.Default.Background_Pause.R, Properties.Settings.Default.Background_Pause.G, Properties.Settings.Default.Background_Pause.B);
             var pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
             var pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
             var vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
-            ColoreColor backgroundColor = default(ColoreColor);
+            var backgroundColor = ColoreColor.Black;
             while (true)
             {
+                var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
+                backgroundColor = BackgroundColorDecision(ref opacity, (10 - Properties.Settings.Default.Density) + 1, backgroundDetermine);
                 if (Properties.Settings.Default.DynamicColorEnable)
                 {
-                    bg_playing = Properties.Settings.Default.Background_Playing;
-                    bg_pause = Properties.Settings.Default.Background_Pause;
+                    bg_playing = new ColoreColor(Properties.Settings.Default.Background_Playing.R, Properties.Settings.Default.Background_Playing.G, Properties.Settings.Default.Background_Playing.B);
+                    bg_pause = new ColoreColor(Properties.Settings.Default.Background_Pause.R, Properties.Settings.Default.Background_Pause.G, Properties.Settings.Default.Background_Pause.B);
                     pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
                     pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
                     vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
@@ -401,8 +417,6 @@ namespace iTunesListener
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
                     var position = player.CalculatedPosition;
-                    var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
-                    backgroundColor = BackgroundColorDecision(ref opacity, backgroundDetermine);
                     keyboardGrid.Set(backgroundColor);
                     mouseGrid.Set(backgroundColor);
                     SetIndividualKeys(ref keyboardGrid);
@@ -412,7 +426,7 @@ namespace iTunesListener
                     SetVolumeScale(ref mouseGrid, Properties.Settings.Default.ReverseLEDRender ? LeftStrip : RightStrip, vol);
                     SetVolumeScale(ref keyboardGrid, DPadKeys, vol);
                 }
-                catch
+                catch (Exception e)
                 {
                     continue; //in case the music is not playing yet, the position is unobtainable.
                 }
@@ -440,19 +454,29 @@ namespace iTunesListener
             keyboardGrid[Key.H] = ColoreColor.Blue;
             keyboardGrid[Key.S] = ColoreColor.Blue;
         }
-        private static ColoreColor BackgroundColorDecision(ref double opacity, System.Drawing.Color backgroundDetermine)
+        private static ColoreColor BackgroundColorDecision(ref double opacity, double density, ColoreColor backgroundDetermine)
         {
-            ColoreColor backgroundColor;
+
+            if (Properties.Settings.Default.AlbumCoverRenderEnable && player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying)
+            {
+                if (MusicChanged) //the IITrack object is not the same for every call
+                {
+                    var mostUsedColor = ImageHelper.GetMostUsedColor((System.Drawing.Bitmap)ImageHelper.GetImage(ref player));
+                    AlbumArtworkColor = new ColoreColor((byte)mostUsedColor.R, (byte)mostUsedColor.G, (byte)mostUsedColor.B);
+                    MusicChanged = false;
+                }
+                backgroundDetermine = AlbumArtworkColor;
+            }
             if (Properties.Settings.Default.BackgroundFadeEnable)
             {
                 opacity = player.PlayerEngine.SoundVolume * 0.01;
-                backgroundColor = new ColoreColor((byte)((backgroundDetermine.R * opacity / 10)), (byte)((backgroundDetermine.G * opacity / 10)), (byte)((backgroundDetermine.B * opacity / 10)));
+                backgroundDetermine = new ColoreColor((byte)((backgroundDetermine.R * opacity / density)), (byte)((backgroundDetermine.G * opacity / density)), (byte)((backgroundDetermine.B * opacity / density)));
             }
             else
             {
-                backgroundColor = new ColoreColor((byte)((backgroundDetermine.R / 10)), (byte)((backgroundDetermine.G / 10)), (byte)((backgroundDetermine.B / 10)));
+                backgroundDetermine = new ColoreColor((byte)((backgroundDetermine.R / density)), (byte)((backgroundDetermine.G / density)), (byte)((backgroundDetermine.B / density)));
             }
-            return backgroundColor;
+            return backgroundDetermine;
         }
         private static void SetPlayingTime(ref KeyboardCustom keyboardGrid, TimeSpan currentTime, params ColoreColor[] colors)
         {
