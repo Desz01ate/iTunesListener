@@ -32,11 +32,7 @@ namespace iTunesListener
         {
             try
             {
-                dynamic param = new ExpandoObject();
-                param.fields = "posts.since(1" + DateTime.Now.ToString("MMMMyyyy") + "){id,message}"; //posts.since(1monthyear){id,message}
-                var result = fbClient.Get("me", param);
-                var data = Convert.ToString(result.posts.data);
-                List<Post> jsonArray = JsonConvert.DeserializeObject<List<Post>>(data);
+                List<Post> jsonArray = GetApplicationPost(ref fbClient);
                 var previousPost = new Post();
                 System.Threading.Tasks.Parallel.ForEach(jsonArray, action);
                 //jsonArray.ForEach(action);
@@ -44,6 +40,15 @@ namespace iTunesListener
             catch
             {
             }
+        }
+
+        public static List<Post> GetApplicationPost(ref FacebookClient fbClient)
+        {
+            dynamic param = new ExpandoObject();
+            param.fields = "posts.since(1" + DateTime.Now.ToString("MMMMyyyy") + "){id,message,permalink_url}"; //posts.since(1monthyear){id,message}
+            var result = fbClient.Get("me", param);
+            var data = Convert.ToString(result.posts.data);
+            return JsonConvert.DeserializeObject<List<Post>>(data);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using iTunesLib;
+using System;
 
 namespace iTunesListener
 {
@@ -18,5 +19,6 @@ namespace iTunesListener
             PlayerEngine = new iTunesApp();
             Music = new Music();
         }
+        public double CalculatedPosition => Math.Round(((double)PlayerEngine.PlayerPosition / Track.Duration) * 10, 2);
     }
 }

@@ -49,16 +49,17 @@
             this.DiscordPauseDetail = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.DynamicColorEnable = new System.Windows.Forms.CheckBox();
             this.BackgroundFadeEnable = new System.Windows.Forms.CheckBox();
             this.ColorSettingsButton = new System.Windows.Forms.Button();
             this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
             this.ResetButton = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
-            this.HistoryStackComboBox = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.DynamicColorEnable = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.HistoryStackComboBox = new System.Windows.Forms.ComboBox();
+            this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
+            this.ReverseLEDRender = new System.Windows.Forms.CheckBox();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -137,7 +138,7 @@
             // 
             // SaveButton
             // 
-            this.SaveButton.Location = new System.Drawing.Point(332, 696);
+            this.SaveButton.Location = new System.Drawing.Point(332, 726);
             this.SaveButton.Name = "SaveButton";
             this.SaveButton.Size = new System.Drawing.Size(76, 37);
             this.SaveButton.TabIndex = 1;
@@ -255,16 +256,27 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.ReverseLEDRender);
             this.groupBox2.Controls.Add(this.DynamicColorEnable);
             this.groupBox2.Controls.Add(this.BackgroundFadeEnable);
             this.groupBox2.Controls.Add(this.ColorSettingsButton);
             this.groupBox2.Controls.Add(this.ChromaSDKEnable);
             this.groupBox2.Location = new System.Drawing.Point(13, 574);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(826, 55);
+            this.groupBox2.Size = new System.Drawing.Size(826, 85);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Razer Chroma SDK";
+            // 
+            // DynamicColorEnable
+            // 
+            this.DynamicColorEnable.AutoSize = true;
+            this.DynamicColorEnable.Location = new System.Drawing.Point(447, 25);
+            this.DynamicColorEnable.Name = "DynamicColorEnable";
+            this.DynamicColorEnable.Size = new System.Drawing.Size(273, 17);
+            this.DynamicColorEnable.TabIndex = 3;
+            this.DynamicColorEnable.Text = "Dynamic color update (Might decrease performance)";
+            this.DynamicColorEnable.UseVisualStyleBackColor = true;
             // 
             // BackgroundFadeEnable
             // 
@@ -299,7 +311,7 @@
             // 
             // ResetButton
             // 
-            this.ResetButton.Location = new System.Drawing.Point(441, 696);
+            this.ResetButton.Location = new System.Drawing.Point(441, 726);
             this.ResetButton.Name = "ResetButton";
             this.ResetButton.Size = new System.Drawing.Size(76, 37);
             this.ResetButton.TabIndex = 4;
@@ -313,22 +325,30 @@
             this.groupBox3.Controls.Add(this.label8);
             this.groupBox3.Controls.Add(this.HistoryStackComboBox);
             this.groupBox3.Controls.Add(this.WebServiceListeningEnable);
-            this.groupBox3.Location = new System.Drawing.Point(13, 635);
+            this.groupBox3.Location = new System.Drawing.Point(13, 665);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(826, 53);
             this.groupBox3.TabIndex = 5;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Preferences";
             // 
-            // WebServiceListeningEnable
+            // label9
             // 
-            this.WebServiceListeningEnable.AutoSize = true;
-            this.WebServiceListeningEnable.Location = new System.Drawing.Point(6, 25);
-            this.WebServiceListeningEnable.Name = "WebServiceListeningEnable";
-            this.WebServiceListeningEnable.Size = new System.Drawing.Size(232, 17);
-            this.WebServiceListeningEnable.TabIndex = 0;
-            this.WebServiceListeningEnable.Text = "Enable application control over web service";
-            this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(543, 26);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(203, 13);
+            this.label9.TabIndex = 3;
+            this.label9.Text = "( larger size will use more system memory )";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(283, 26);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(127, 13);
+            this.label8.TabIndex = 2;
+            this.label8.Text = "Music history stack size : ";
             // 
             // HistoryStackComboBox
             // 
@@ -351,39 +371,31 @@
             this.HistoryStackComboBox.Size = new System.Drawing.Size(121, 21);
             this.HistoryStackComboBox.TabIndex = 1;
             // 
-            // label8
+            // WebServiceListeningEnable
             // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(283, 26);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(127, 13);
-            this.label8.TabIndex = 2;
-            this.label8.Text = "Music history stack size : ";
+            this.WebServiceListeningEnable.AutoSize = true;
+            this.WebServiceListeningEnable.Location = new System.Drawing.Point(6, 25);
+            this.WebServiceListeningEnable.Name = "WebServiceListeningEnable";
+            this.WebServiceListeningEnable.Size = new System.Drawing.Size(232, 17);
+            this.WebServiceListeningEnable.TabIndex = 0;
+            this.WebServiceListeningEnable.Text = "Enable application control over web service";
+            this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
             // 
-            // label9
+            // ReverseLEDRender
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(543, 26);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(203, 13);
-            this.label9.TabIndex = 3;
-            this.label9.Text = "( larger size will use more system memory )";
-            // 
-            // DynamicColorEnable
-            // 
-            this.DynamicColorEnable.AutoSize = true;
-            this.DynamicColorEnable.Location = new System.Drawing.Point(447, 25);
-            this.DynamicColorEnable.Name = "DynamicColorEnable";
-            this.DynamicColorEnable.Size = new System.Drawing.Size(273, 17);
-            this.DynamicColorEnable.TabIndex = 3;
-            this.DynamicColorEnable.Text = "Dynamic color update (Might decrease performance)";
-            this.DynamicColorEnable.UseVisualStyleBackColor = true;
+            this.ReverseLEDRender.AutoSize = true;
+            this.ReverseLEDRender.Location = new System.Drawing.Point(6, 55);
+            this.ReverseLEDRender.Name = "ReverseLEDRender";
+            this.ReverseLEDRender.Size = new System.Drawing.Size(284, 17);
+            this.ReverseLEDRender.TabIndex = 4;
+            this.ReverseLEDRender.Text = "Reverse LED strip render (Razer Mamba TE / Chroma)";
+            this.ReverseLEDRender.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(848, 748);
+            this.ClientSize = new System.Drawing.Size(848, 770);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.ResetButton);
             this.Controls.Add(this.groupBox2);
@@ -439,5 +451,6 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.ComboBox HistoryStackComboBox;
         private System.Windows.Forms.CheckBox DynamicColorEnable;
+        private System.Windows.Forms.CheckBox ReverseLEDRender;
     }
 }

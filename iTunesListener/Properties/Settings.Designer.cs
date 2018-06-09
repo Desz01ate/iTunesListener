@@ -262,5 +262,17 @@ namespace iTunesListener.Properties {
                 this["DynamicColorEnable"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ReverseLEDRender {
+            get {
+                return ((bool)(this["ReverseLEDRender"]));
+            }
+            set {
+                this["ReverseLEDRender"] = value;
+            }
+        }
     }
 }

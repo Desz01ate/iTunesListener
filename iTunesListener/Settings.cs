@@ -28,6 +28,7 @@ namespace iTunesListener
             BackgroundFadeEnable.Checked = Properties.Settings.Default.BackgroundFadeEnable;
             DiscordRichPresenceEnable.Checked = Properties.Settings.Default.DiscordRichPresenceEnable;
             HistoryStackComboBox.SelectedIndex = Properties.Settings.Default.HistoryStackLimit;
+            ReverseLEDRender.Checked = Properties.Settings.Default.ReverseLEDRender;
             checkBox1_CheckedChanged(null, EventArgs.Empty);
             DiscordRichPresenceEnable_CheckedChanged(null, EventArgs.Empty);
         }
@@ -50,7 +51,8 @@ namespace iTunesListener
             Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
             Properties.Settings.Default.BackgroundFadeEnable = BackgroundFadeEnable.Checked;
             Properties.Settings.Default.DiscordRichPresenceEnable = DiscordRichPresenceEnable.Checked;
-            Properties.Settings.Default.HistoryStackLimit = (byte)HistoryStackComboBox.SelectedIndex;       
+            Properties.Settings.Default.HistoryStackLimit = (byte)HistoryStackComboBox.SelectedIndex;
+            Properties.Settings.Default.ReverseLEDRender = ReverseLEDRender.Checked;
             Properties.Settings.Default.Save();
             MessageBox.Show("Restart application for some settings to take effect.", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();
