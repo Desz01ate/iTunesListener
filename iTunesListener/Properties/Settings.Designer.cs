@@ -218,18 +218,6 @@ namespace iTunesListener.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool BackgroundFadeEnable {
-            get {
-                return ((bool)(this["BackgroundFadeEnable"]));
-            }
-            set {
-                this["BackgroundFadeEnable"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool DiscordRichPresenceEnable {
             get {
                 return ((bool)(this["DiscordRichPresenceEnable"]));
@@ -290,12 +278,24 @@ namespace iTunesListener.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
-        public int Density {
+        public int RefreshRate {
             get {
-                return ((int)(this["Density"]));
+                return ((int)(this["RefreshRate"]));
             }
             set {
-                this["Density"] = value;
+                this["RefreshRate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool AdaptiveDensity {
+            get {
+                return ((bool)(this["AdaptiveDensity"]));
+            }
+            set {
+                this["AdaptiveDensity"] = value;
             }
         }
     }

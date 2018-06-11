@@ -17,9 +17,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ColoreColor = Colore.Data.Color;
 using System.Windows.Forms;
-using Colore.Effects.Headset;
-using Colore.Effects.Mousepad;
-using System.Configuration;
+using NAudio.CoreAudioApi;
 
 namespace iTunesListener
 {
@@ -48,7 +46,7 @@ namespace iTunesListener
         private static HttpClient client = new HttpClient();
         private static bool MusicChanged = false;
         private static ColoreColor AlbumArtworkColor = default(ColoreColor);
-
+        private static MMDevice ActiveDevice;
         [STAThread]
         public static void Main(string[] args)
         {
@@ -68,12 +66,21 @@ namespace iTunesListener
                 MessageBox.Show("Can't evaluate Facebook OAuth Token, please check your token in settings (S) or your network connection.", "iTunesListener", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             EventHandler.SetConsoleCtrlHandler(handler, true);
+            Task.Run(delegate
+            {
+                while (true)
+                {
+                    ActiveDevice = new MMDeviceEnumerator().EnumerateAudioEndPoints(DataFlow.All, DeviceState.Active).ToList().OrderByDescending(x => x.AudioMeterInformation.MasterPeakValue).FirstOrDefault();
+                    Thread.Sleep(1000);
+                }
+            });
             Task.Run((Action)ActionListenerThread);
             Task.Run((Action)HeaderThread);
             if (Properties.Settings.Default.WebServiceListening)
                 Task.Run((Action)WebServiceListener);
             if (Properties.Settings.Default.ChromaSDKEnable)
                 Task.Run((Action)ChromaUpdateAsync);
+
             mainThread = new Thread(new ThreadStart(MainThread));
             mainThread.Start();
 
@@ -395,24 +402,17 @@ namespace iTunesListener
             var keyboardGrid = KeyboardCustom.Create();
             var mouseGrid = MouseCustom.Create();
             var chroma = await ColoreProvider.CreateNativeAsync();
-            var bg_playing = new ColoreColor(Properties.Settings.Default.Background_Playing.R, Properties.Settings.Default.Background_Playing.G, Properties.Settings.Default.Background_Playing.B);
-            var bg_pause = new ColoreColor(Properties.Settings.Default.Background_Pause.R, Properties.Settings.Default.Background_Pause.G, Properties.Settings.Default.Background_Pause.B);
-            var pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
-            var pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
-            var vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
+            var bg_playing = new ColoreColor((byte)Properties.Settings.Default.Background_Playing.R, (byte)Properties.Settings.Default.Background_Playing.G, (byte)Properties.Settings.Default.Background_Playing.B);
+            var bg_pause = new ColoreColor((byte)Properties.Settings.Default.Background_Pause.R, (byte)Properties.Settings.Default.Background_Pause.G, (byte)Properties.Settings.Default.Background_Pause.B);
+            var pos_fore = new ColoreColor((byte)Properties.Settings.Default.Position_Foreground.R, (byte)Properties.Settings.Default.Position_Foreground.G, (byte)Properties.Settings.Default.Position_Foreground.B);
+            var pos_back = new ColoreColor((byte)Properties.Settings.Default.Position_Background.R, (byte)Properties.Settings.Default.Position_Background.G, (byte)Properties.Settings.Default.Position_Background.B);
+            var vol = new ColoreColor((byte)Properties.Settings.Default.Volume.R, (byte)Properties.Settings.Default.Volume.G, (byte)Properties.Settings.Default.Volume.B);
             var backgroundColor = ColoreColor.Black;
             while (true)
             {
                 var backgroundDetermine = player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying ? bg_playing : bg_pause;
-                backgroundColor = BackgroundColorDecision(ref opacity, (10 - Properties.Settings.Default.Density) + 1, backgroundDetermine);
-                if (Properties.Settings.Default.DynamicColorEnable)
-                {
-                    bg_playing = new ColoreColor(Properties.Settings.Default.Background_Playing.R, Properties.Settings.Default.Background_Playing.G, Properties.Settings.Default.Background_Playing.B);
-                    bg_pause = new ColoreColor(Properties.Settings.Default.Background_Pause.R, Properties.Settings.Default.Background_Pause.G, Properties.Settings.Default.Background_Pause.B);
-                    pos_fore = new ColoreColor(Properties.Settings.Default.Position_Foreground.R, Properties.Settings.Default.Position_Foreground.G, Properties.Settings.Default.Position_Foreground.B);
-                    pos_back = new ColoreColor(Properties.Settings.Default.Position_Background.R, Properties.Settings.Default.Position_Background.G, Properties.Settings.Default.Position_Background.B);
-                    vol = new ColoreColor(Properties.Settings.Default.Volume.R, Properties.Settings.Default.Volume.G, Properties.Settings.Default.Volume.B);
-                }
+                backgroundColor = BackgroundColorDecision(ref opacity, Properties.Settings.Default.AdaptiveDensity ? ActiveDevice.AudioMeterInformation.MasterPeakValue : 1, backgroundDetermine);// (10 - Properties.Settings.Default.RefreshRate) + 1, backgroundDetermine);
+                ColorsVariableDecision(ref bg_playing, ref bg_pause, ref pos_fore, ref pos_back, ref vol);
                 try
                 {
                     var currentTime = TimeSpan.FromSeconds(player.PlayerEngine.PlayerPosition);
@@ -426,7 +426,7 @@ namespace iTunesListener
                     SetVolumeScale(ref mouseGrid, Properties.Settings.Default.ReverseLEDRender ? LeftStrip : RightStrip, vol);
                     SetVolumeScale(ref keyboardGrid, DPadKeys, vol);
                 }
-                catch (Exception e)
+                catch
                 {
                     continue; //in case the music is not playing yet, the position is unobtainable.
                 }
@@ -436,8 +436,31 @@ namespace iTunesListener
                     await chroma.Mouse.SetGridAsync(mouseGrid);
                     await chroma.Headset.SetAllAsync(backgroundColor);
                     await chroma.Mousepad.SetAllAsync(backgroundColor);
-                    Thread.Sleep(500);
+                    Thread.Sleep(500 * (Properties.Settings.Default.AdaptiveDensity ? Properties.Settings.Default.RefreshRate / 10 : 1));
                 }
+            }
+        }
+
+        private static void ColorsVariableDecision(ref ColoreColor bg_playing, ref ColoreColor bg_pause, ref ColoreColor pos_fore, ref ColoreColor pos_back, ref ColoreColor vol)
+        {
+            if (Properties.Settings.Default.DynamicColorEnable)
+            {
+                bg_playing = new ColoreColor((byte)Properties.Settings.Default.Background_Playing.R, (byte)Properties.Settings.Default.Background_Playing.G, (byte)Properties.Settings.Default.Background_Playing.B);
+                bg_pause = new ColoreColor((byte)Properties.Settings.Default.Background_Pause.R, (byte)Properties.Settings.Default.Background_Pause.G, (byte)Properties.Settings.Default.Background_Pause.B);
+                pos_fore = new ColoreColor((byte)Properties.Settings.Default.Position_Foreground.R, (byte)Properties.Settings.Default.Position_Foreground.G, (byte)Properties.Settings.Default.Position_Foreground.B);
+                pos_back = new ColoreColor((byte)Properties.Settings.Default.Position_Background.R, (byte)Properties.Settings.Default.Position_Background.G, (byte)Properties.Settings.Default.Position_Background.B);
+                vol = new ColoreColor((byte)Properties.Settings.Default.Volume.R, (byte)Properties.Settings.Default.Volume.G, (byte)Properties.Settings.Default.Volume.B);
+            }
+            if (Properties.Settings.Default.AlbumCoverRenderEnable) //Album render has high priority over dynamic color
+            {
+                var complement = System.Drawing.Color.FromArgb((int)(System.Drawing.Color.FromArgb(AlbumArtworkColor.R, AlbumArtworkColor.G, AlbumArtworkColor.B).ToArgb() ^ 0xFFFFFFFu));
+                var complement_bg = new ColoreColor(complement.R, complement.G, complement.B);
+                //var complement_bg = new ColoreColor((byte)~origin_bg.R, (byte)~origin_bg.G, (byte)~origin_bg.B);
+                bg_playing = AlbumArtworkColor;
+                bg_pause = ColoreColor.Black;
+                pos_fore = complement_bg;
+                pos_back = complement_bg;
+                vol = complement_bg;
             }
         }
 
@@ -459,7 +482,7 @@ namespace iTunesListener
 
             if (Properties.Settings.Default.AlbumCoverRenderEnable && player.PlayerEngine.PlayerState == ITPlayerState.ITPlayerStatePlaying)
             {
-                if (MusicChanged) //the IITrack object is not the same for every call
+                if (MusicChanged)
                 {
                     var mostUsedColor = ImageHelper.GetMostUsedColor((System.Drawing.Bitmap)ImageHelper.GetImage(ref player));
                     AlbumArtworkColor = new ColoreColor((byte)mostUsedColor.R, (byte)mostUsedColor.G, (byte)mostUsedColor.B);
@@ -467,6 +490,7 @@ namespace iTunesListener
                 }
                 backgroundDetermine = AlbumArtworkColor;
             }
+            /*
             if (Properties.Settings.Default.BackgroundFadeEnable)
             {
                 opacity = player.PlayerEngine.SoundVolume * 0.01;
@@ -475,7 +499,9 @@ namespace iTunesListener
             else
             {
                 backgroundDetermine = new ColoreColor((byte)((backgroundDetermine.R / density)), (byte)((backgroundDetermine.G / density)), (byte)((backgroundDetermine.B / density)));
-            }
+            }*/
+            backgroundDetermine = new ColoreColor((byte)((backgroundDetermine.R * density)), (byte)((backgroundDetermine.G * density)), (byte)((backgroundDetermine.B * density)));
+
             return backgroundDetermine;
         }
         private static void SetPlayingTime(ref KeyboardCustom keyboardGrid, TimeSpan currentTime, params ColoreColor[] colors)

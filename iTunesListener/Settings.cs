@@ -25,13 +25,14 @@ namespace iTunesListener
             ChromaSDKEnable.Checked = Properties.Settings.Default.ChromaSDKEnable;
             DynamicColorEnable.Checked = Properties.Settings.Default.DynamicColorEnable;
             WebServiceListeningEnable.Checked = Properties.Settings.Default.WebServiceListening;
-            BackgroundFadeEnable.Checked = Properties.Settings.Default.BackgroundFadeEnable;
             DiscordRichPresenceEnable.Checked = Properties.Settings.Default.DiscordRichPresenceEnable;
             HistoryStackComboBox.SelectedIndex = Properties.Settings.Default.HistoryStackLimit;
             ReverseLEDRender.Checked = Properties.Settings.Default.ReverseLEDRender;
             AlbumCoverRenderEnable.Checked = Properties.Settings.Default.AlbumCoverRenderEnable;
-            Density.Value = Properties.Settings.Default.Density;
+            RefreshRate.Value = Properties.Settings.Default.RefreshRate;
+            AdaptiveDensity.Checked = Properties.Settings.Default.AdaptiveDensity;
             checkBox1_CheckedChanged(null, EventArgs.Empty);
+            ChromaSDKEnable_CheckedChanged(null, EventArgs.Empty);
             DiscordRichPresenceEnable_CheckedChanged(null, EventArgs.Empty);
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -51,12 +52,12 @@ namespace iTunesListener
             Properties.Settings.Default.ChromaSDKEnable = ChromaSDKEnable.Checked;
             Properties.Settings.Default.DynamicColorEnable = DynamicColorEnable.Checked;
             Properties.Settings.Default.WebServiceListening = WebServiceListeningEnable.Checked;
-            Properties.Settings.Default.BackgroundFadeEnable = BackgroundFadeEnable.Checked;
             Properties.Settings.Default.DiscordRichPresenceEnable = DiscordRichPresenceEnable.Checked;
             Properties.Settings.Default.HistoryStackLimit = (byte)HistoryStackComboBox.SelectedIndex;
             Properties.Settings.Default.ReverseLEDRender = ReverseLEDRender.Checked;
             Properties.Settings.Default.AlbumCoverRenderEnable = AlbumCoverRenderEnable.Checked;
-            Properties.Settings.Default.Density = Density.Value;
+            Properties.Settings.Default.RefreshRate = RefreshRate.Value;
+            Properties.Settings.Default.AdaptiveDensity = AdaptiveDensity.Checked;
             Properties.Settings.Default.Save();
             MessageBox.Show("Restart application for some settings to take effect.", "Settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Dispose();
@@ -93,8 +94,11 @@ namespace iTunesListener
 
         private void ChromaSDKEnable_CheckedChanged(object sender, EventArgs e)
         {
-            BackgroundFadeEnable.Enabled = ChromaSDKEnable.Checked;
             ColorSettingsButton.Enabled = ChromaSDKEnable.Checked;
+            DynamicColorEnable.Enabled = ChromaSDKEnable.Checked;
+            ReverseLEDRender.Enabled = ChromaSDKEnable.Checked;
+            AlbumCoverRenderEnable.Enabled = ChromaSDKEnable.Checked;
+            RefreshRate.Enabled = ChromaSDKEnable.Checked;
         }
     }
 }

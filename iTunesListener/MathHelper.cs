@@ -8,10 +8,10 @@ namespace iTunesListener
 {
     class MathHelper
     {
-        public static Int64[] FrequencyDistribution(List<Int64> dataset, Int64[] lowerRange, Int64[] upperRange)
+        public static int[] FrequencyDistribution(List<Int64> dataset, Int64[] lowerRange, Int64[] upperRange)
         {
             if (lowerRange.Length != upperRange.Length)
-                throw new Exception();
+                throw new IndexOutOfRangeException("both lower bound and upper bound must had the same dimension and length.");
             var summation = new int[lowerRange.Length];
             var result = 0;
             foreach (var data in dataset)
@@ -21,16 +21,11 @@ namespace iTunesListener
                     if (lowerRange[i] < data && data < upperRange[i])
                     {
                         summation[i]++;
-                        continue;
+                        break;
                     }
                 }
             }
-            for(var i = 1; i < summation.Length; i++)
-            {
-                if (summation[i] > summation[i - 1])
-                    result = i;
-            }
-            return new Int64[] { lowerRange[result],upperRange[result]};
+            return summation;
         }
     }
 }

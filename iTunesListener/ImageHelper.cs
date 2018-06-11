@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace iTunesListener
@@ -16,7 +17,10 @@ namespace iTunesListener
 
         public static Image GetImage(ref PlayerInstance player)
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(),$"{player.Track.Album}.png");
+            var track = player.Track.Album;
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            track = rgx.Replace(track, "");
+            var path = Path.Combine(Directory.GetCurrentDirectory(),$"{track}.png");
             if (File.Exists(path))
             {
                 //byte[] imgdata = System.IO.File.ReadAllBytes(path);
@@ -67,33 +71,6 @@ namespace iTunesListener
             */
             var colorIncidence = new Dictionary<int, int>();
 
-            var sampleBlock = new[] {
-                new[] { 0,bitMap.Width * 0.1, 0,bitMap.Height * 0.1 }, //left-top
-                new[] { bitMap.Width * 0.9,bitMap.Width, bitMap.Width * 0.9, bitMap.Height}, //bitMap.Height * 0.1 ,bitMap.Height}, //right-top
-                //new[] { bitMap.Height * 0.9, bitMap.Width, bitMap.Height * 0.9,bitMap.Height }, //left-bottom
-                //new[] { bitMap.Width * 0.9, bitMap.Height * 0.9 }  //right-bottom
-            };
-            /*
-            for (var i = 0; i < sampleBlock.Length; i++)
-            {
-                //var x_start = sampleBlock[i][0];
-                //var x_end = sampleBlock[i][1];
-                //var y_start = sampleBlock[i][2];
-                //var y_end = sampleBlock[i][3];
-                for (int x = (int)sampleBlock[i][0]; x < (int)sampleBlock[i][1]; x++)
-                {
-                    for (int y = (int)sampleBlock[i][2]; y < (int)sampleBlock[i][3]; y++)
-                    {
-                        var pixelColor = bitMap.GetPixel(x, y).ToArgb();
-                        if (colorIncidence.Keys.Contains(pixelColor))
-                            colorIncidence[pixelColor]++;
-                        else
-                            colorIncidence.Add(pixelColor, 1);
-                    }
-                }
-            }
-            */
-
             for (var x = 0; x < bitMap.Size.Width; x++)
                 for (var y = 0; y < bitMap.Size.Height; y++)
                 {
@@ -103,7 +80,8 @@ namespace iTunesListener
                     else
                         colorIncidence.Add(pixelColor, 1);
                 }
-
+            return Color.FromArgb(colorIncidence.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value).First().Key);
+            /*
             if (colorIncidence.Count == 1)
                 return Color.FromArgb(colorIncidence.First().Key);
             //var r = colorIncidence.OrderByDescending(x => x.Value).ToDictionary(x => Color.FromArgb(x.Key), x => x.Value);
@@ -131,6 +109,7 @@ namespace iTunesListener
             upperbound[9] = colorIncidence.Keys.Max();
             var frequenceLength = MathHelper.FrequencyDistribution(colorIncidence.Keys.Select(x => (long)x).ToList(), lowerbound, upperbound);
             return Color.FromArgb(colorIncidence.Where(x => frequenceLength[0] < x.Key && x.Key < frequenceLength[1]).OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value).First().Key);
+            */
         }
 
     }

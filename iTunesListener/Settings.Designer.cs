@@ -49,8 +49,13 @@
             this.DiscordPauseDetail = new System.Windows.Forms.RichTextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.RefreshRate = new System.Windows.Forms.TrackBar();
+            this.AlbumCoverRenderEnable = new System.Windows.Forms.CheckBox();
+            this.ReverseLEDRender = new System.Windows.Forms.CheckBox();
             this.DynamicColorEnable = new System.Windows.Forms.CheckBox();
-            this.BackgroundFadeEnable = new System.Windows.Forms.CheckBox();
             this.ColorSettingsButton = new System.Windows.Forms.Button();
             this.ChromaSDKEnable = new System.Windows.Forms.CheckBox();
             this.ResetButton = new System.Windows.Forms.Button();
@@ -59,15 +64,12 @@
             this.label8 = new System.Windows.Forms.Label();
             this.HistoryStackComboBox = new System.Windows.Forms.ComboBox();
             this.WebServiceListeningEnable = new System.Windows.Forms.CheckBox();
-            this.ReverseLEDRender = new System.Windows.Forms.CheckBox();
-            this.AlbumCoverRenderEnable = new System.Windows.Forms.CheckBox();
-            this.Density = new System.Windows.Forms.TrackBar();
-            this.label10 = new System.Windows.Forms.Label();
+            this.AdaptiveDensity = new System.Windows.Forms.CheckBox();
             this.FacebookGroupBox.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RefreshRate)).BeginInit();
             this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Density)).BeginInit();
             this.SuspendLayout();
             // 
             // FacebookGroupBox
@@ -260,12 +262,14 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Controls.Add(this.AdaptiveDensity);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Controls.Add(this.label11);
             this.groupBox2.Controls.Add(this.label10);
-            this.groupBox2.Controls.Add(this.Density);
+            this.groupBox2.Controls.Add(this.RefreshRate);
             this.groupBox2.Controls.Add(this.AlbumCoverRenderEnable);
             this.groupBox2.Controls.Add(this.ReverseLEDRender);
             this.groupBox2.Controls.Add(this.DynamicColorEnable);
-            this.groupBox2.Controls.Add(this.BackgroundFadeEnable);
             this.groupBox2.Controls.Add(this.ColorSettingsButton);
             this.groupBox2.Controls.Add(this.ChromaSDKEnable);
             this.groupBox2.Location = new System.Drawing.Point(13, 574);
@@ -275,29 +279,77 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Razer Chroma SDK";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label12.Location = new System.Drawing.Point(684, 91);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(43, 13);
+            this.label12.TabIndex = 8;
+            this.label12.Text = "SLOW";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(222)));
+            this.label11.Location = new System.Drawing.Point(133, 91);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(38, 13);
+            this.label11.TabIndex = 7;
+            this.label11.Text = "FAST";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(7, 91);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(114, 13);
+            this.label10.TabIndex = 4;
+            this.label10.Text = "Render Refresh Rate :";
+            // 
+            // Density
+            // 
+            this.RefreshRate.Location = new System.Drawing.Point(180, 87);
+            this.RefreshRate.Minimum = 1;
+            this.RefreshRate.Name = "Density";
+            this.RefreshRate.Size = new System.Drawing.Size(498, 45);
+            this.RefreshRate.TabIndex = 6;
+            this.RefreshRate.Value = 1;
+            // 
+            // AlbumCoverRenderEnable
+            // 
+            this.AlbumCoverRenderEnable.AutoSize = true;
+            this.AlbumCoverRenderEnable.Location = new System.Drawing.Point(314, 55);
+            this.AlbumCoverRenderEnable.Name = "AlbumCoverRenderEnable";
+            this.AlbumCoverRenderEnable.Size = new System.Drawing.Size(279, 17);
+            this.AlbumCoverRenderEnable.TabIndex = 5;
+            this.AlbumCoverRenderEnable.Text = "Render color according to album cover (Experimental)";
+            this.AlbumCoverRenderEnable.UseVisualStyleBackColor = true;
+            // 
+            // ReverseLEDRender
+            // 
+            this.ReverseLEDRender.AutoSize = true;
+            this.ReverseLEDRender.Location = new System.Drawing.Point(6, 55);
+            this.ReverseLEDRender.Name = "ReverseLEDRender";
+            this.ReverseLEDRender.Size = new System.Drawing.Size(284, 17);
+            this.ReverseLEDRender.TabIndex = 4;
+            this.ReverseLEDRender.Text = "Reverse LED strip render (Razer Mamba TE / Chroma)";
+            this.ReverseLEDRender.UseVisualStyleBackColor = true;
+            // 
             // DynamicColorEnable
             // 
             this.DynamicColorEnable.AutoSize = true;
-            this.DynamicColorEnable.Location = new System.Drawing.Point(447, 25);
+            this.DynamicColorEnable.Location = new System.Drawing.Point(314, 25);
             this.DynamicColorEnable.Name = "DynamicColorEnable";
             this.DynamicColorEnable.Size = new System.Drawing.Size(273, 17);
             this.DynamicColorEnable.TabIndex = 3;
             this.DynamicColorEnable.Text = "Dynamic color update (Might decrease performance)";
             this.DynamicColorEnable.UseVisualStyleBackColor = true;
             // 
-            // BackgroundFadeEnable
-            // 
-            this.BackgroundFadeEnable.AutoSize = true;
-            this.BackgroundFadeEnable.Location = new System.Drawing.Point(210, 25);
-            this.BackgroundFadeEnable.Name = "BackgroundFadeEnable";
-            this.BackgroundFadeEnable.Size = new System.Drawing.Size(207, 17);
-            this.BackgroundFadeEnable.TabIndex = 2;
-            this.BackgroundFadeEnable.Text = "Background fade according to volume";
-            this.BackgroundFadeEnable.UseVisualStyleBackColor = true;
-            // 
             // ColorSettingsButton
             // 
-            this.ColorSettingsButton.Location = new System.Drawing.Point(738, 21);
+            this.ColorSettingsButton.Location = new System.Drawing.Point(738, 87);
             this.ColorSettingsButton.Name = "ColorSettingsButton";
             this.ColorSettingsButton.Size = new System.Drawing.Size(75, 23);
             this.ColorSettingsButton.TabIndex = 1;
@@ -388,43 +440,15 @@
             this.WebServiceListeningEnable.Text = "Enable application control over web service";
             this.WebServiceListeningEnable.UseVisualStyleBackColor = true;
             // 
-            // ReverseLEDRender
+            // AdaptiveBlinkingEnable
             // 
-            this.ReverseLEDRender.AutoSize = true;
-            this.ReverseLEDRender.Location = new System.Drawing.Point(6, 55);
-            this.ReverseLEDRender.Name = "ReverseLEDRender";
-            this.ReverseLEDRender.Size = new System.Drawing.Size(284, 17);
-            this.ReverseLEDRender.TabIndex = 4;
-            this.ReverseLEDRender.Text = "Reverse LED strip render (Razer Mamba TE / Chroma)";
-            this.ReverseLEDRender.UseVisualStyleBackColor = true;
-            // 
-            // AlbumCoverRenderEnable
-            // 
-            this.AlbumCoverRenderEnable.AutoSize = true;
-            this.AlbumCoverRenderEnable.Location = new System.Drawing.Point(447, 55);
-            this.AlbumCoverRenderEnable.Name = "AlbumCoverRenderEnable";
-            this.AlbumCoverRenderEnable.Size = new System.Drawing.Size(313, 17);
-            this.AlbumCoverRenderEnable.TabIndex = 5;
-            this.AlbumCoverRenderEnable.Text = "Render background according to album cover (Experimental)";
-            this.AlbumCoverRenderEnable.UseVisualStyleBackColor = true;
-            // 
-            // Density
-            // 
-            this.Density.Location = new System.Drawing.Point(117, 87);
-            this.Density.Minimum = 1;
-            this.Density.Name = "Density";
-            this.Density.Size = new System.Drawing.Size(498, 45);
-            this.Density.TabIndex = 6;
-            this.Density.Value = 1;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(7, 91);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(104, 13);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "Color Density Level :";
+            this.AdaptiveDensity.AutoSize = true;
+            this.AdaptiveDensity.Location = new System.Drawing.Point(638, 25);
+            this.AdaptiveDensity.Name = "AdaptiveBlinkingEnable";
+            this.AdaptiveDensity.Size = new System.Drawing.Size(130, 17);
+            this.AdaptiveDensity.TabIndex = 9;
+            this.AdaptiveDensity.Text = "Adaptive color density";
+            this.AdaptiveDensity.UseVisualStyleBackColor = true;
             // 
             // Settings
             // 
@@ -448,9 +472,9 @@
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.RefreshRate)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.Density)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -481,7 +505,6 @@
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.CheckBox WebServiceListeningEnable;
-        private System.Windows.Forms.CheckBox BackgroundFadeEnable;
         private System.Windows.Forms.CheckBox DiscordRichPresenceEnable;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
@@ -490,6 +513,9 @@
         private System.Windows.Forms.CheckBox ReverseLEDRender;
         private System.Windows.Forms.CheckBox AlbumCoverRenderEnable;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TrackBar Density;
+        private System.Windows.Forms.TrackBar RefreshRate;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.CheckBox AdaptiveDensity;
     }
 }
